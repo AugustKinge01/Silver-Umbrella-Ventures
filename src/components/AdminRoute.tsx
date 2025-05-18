@@ -13,7 +13,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Spinner size="lg" />
+        <Spinner size="lg" variant="primary" />
       </div>
     );
   }
