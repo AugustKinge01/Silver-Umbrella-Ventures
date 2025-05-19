@@ -1,12 +1,14 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Wifi, Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  // Get the current app URL for QR code
+  const appUrl = window.location.origin;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -91,6 +93,26 @@ const Index = () => {
               <h3 className="text-xl font-semibold mb-2">Get Connected</h3>
               <p className="text-silver-700">Receive your access voucher instantly and connect to our network.</p>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* New QR Code section */}
+      <div className="bg-silver-50 py-12">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Instant Access</h2>
+            <p className="text-silver-600 max-w-lg mx-auto">
+              Scan the QR code below with your mobile device to instantly access Silver Umbrella services.
+            </p>
+          </div>
+          
+          <div className="max-w-xs mx-auto">
+            <QRCodeGenerator 
+              url={appUrl}
+              title="Access Silver Umbrella" 
+              description="Scan to open the app on your device" 
+            />
           </div>
         </div>
       </div>

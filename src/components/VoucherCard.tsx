@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Voucher } from "@/contexts/PlanContext";
-import { Badge, BadgeCheck, Shield } from "lucide-react";
+import { Badge, BadgeCheck, Shield, Link, ExternalLink } from "lucide-react";
 
 type VoucherCardProps = {
   voucher: Voucher;
@@ -20,6 +20,11 @@ const VoucherCard = ({ voucher, planName, planType, onActivate }: VoucherCardPro
   const [progress, setProgress] = useState(100);
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [tokenInfo, setTokenInfo] = useState({
+    symbol: planType === 'internet' ? 'INET' : 'NRGY',
+    rate: planType === 'internet' ? 0.1 : 0.15,
+    total: 0
+  });
 
   // Simulate blockchain verification when voucher becomes active
   useEffect(() => {
@@ -52,6 +57,10 @@ const VoucherCard = ({ voucher, planName, planType, onActivate }: VoucherCardPro
           
           setRemainingMinutes(remainingMins);
           setProgress(Math.round((remainingMins / totalDurationMinutes) * 100));
+          
+          // Update token rewards
+          const rewards = calculateRewards(remainingMins);
+          setTokenInfo(prev => ({...prev, total: rewards}));
         }
       }, 60000); // Update every minute
       
@@ -64,6 +73,10 @@ const VoucherCard = ({ voucher, planName, planType, onActivate }: VoucherCardPro
       
       setRemainingMinutes(remainingMins);
       setProgress(Math.round((remainingMins / totalDurationMinutes) * 100));
+      
+      // Initial token calculation
+      const initialRewards = calculateRewards(remainingMins);
+      setTokenInfo(prev => ({...prev, total: initialRewards}));
       
       return () => clearInterval(interval);
     }
@@ -85,19 +98,18 @@ const VoucherCard = ({ voucher, planName, planType, onActivate }: VoucherCardPro
   };
   
   // Calculate token rewards based on remaining time and plan type
-  const calculateRewards = () => {
-    if (!voucher.isActive || remainingMinutes <= 0) return 0;
+  const calculateRewards = (minutes: number) => {
+    if (!voucher.isActive || minutes <= 0) return 0;
     
     // Base reward calculation (simplified for MVP)
     const baseRate = planType === 'internet' ? 0.1 : 0.15; // Power gives slightly more tokens
-    const timeMultiplier = Math.max(0.1, remainingMinutes / (24 * 60)); // Scale by remaining time
+    const timeMultiplier = Math.max(0.1, minutes / (24 * 60)); // Scale by remaining time
     
-    return Math.round(baseRate * remainingMinutes * 10) / 10; // Round to 1 decimal place
+    return Math.round(baseRate * minutes * 10) / 10; // Round to 1 decimal place
   };
 
   const planTypeColor = planType === 'internet' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600';
   const isExpired = voucher.isActive && remainingMinutes <= 0;
-  const rewardTokens = calculateRewards();
   
   return (
     <Card className={`${isExpired ? 'opacity-70' : ''}`}>
@@ -158,18 +170,25 @@ const VoucherCard = ({ voucher, planName, planType, onActivate }: VoucherCardPro
             </div>
             <Progress value={progress} />
             
-            {rewardTokens > 0 && (
+            {tokenInfo.total > 0 && (
               <div className="mt-4 bg-amber-50 p-3 rounded-lg border border-amber-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Shield size={16} className="text-amber-600 mr-2" />
-                    <span className="text-sm font-medium">Reward Tokens:</span>
+                    <span className="text-sm font-medium">{tokenInfo.symbol} Tokens:</span>
                   </div>
-                  <span className="font-semibold text-amber-700">{rewardTokens}</span>
+                  <span className="font-semibold text-amber-700">{tokenInfo.total}</span>
                 </div>
                 <p className="text-xs text-amber-600 mt-1">
-                  Earning {planType === 'internet' ? '0.1' : '0.15'} tokens per hour
+                  Earning {tokenInfo.rate} {tokenInfo.symbol}/hour
                 </p>
+                
+                {verified && (
+                  <div className="mt-2 pt-2 border-t border-amber-200 flex items-center justify-between">
+                    <span className="text-xs text-amber-700">View on Finternet Ledger</span>
+                    <ExternalLink size={14} className="text-amber-600" />
+                  </div>
+                )}
               </div>
             )}
           </div>
