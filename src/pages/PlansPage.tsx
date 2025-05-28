@@ -21,7 +21,7 @@ const PlansPage = () => {
     setIsPaymentModalOpen(true);
   };
   
-  const handlePayment = async (paymentMethod: 'card' | 'crypto') => {
+  const handlePayment = async (paymentMethod: 'card' | 'crypto' | 'ton') => {
     if (!selectedPlanId) return;
     
     const voucher = await purchasePlan(selectedPlanId, paymentMethod);

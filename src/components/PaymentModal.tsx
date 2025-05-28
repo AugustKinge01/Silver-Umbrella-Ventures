@@ -1,24 +1,25 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, Wallet, Coins } from "lucide-react";
 import { Plan } from "@/contexts/PlanContext";
 import { Spinner } from "@/components/ui/spinner";
+import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
+import { Address } from '@tonconnect/sdk';
 
 type PaymentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   plan: Plan | null;
-  onPayment: (paymentMethod: 'card' | 'crypto') => Promise<void>;
+  onPayment: (paymentMethod: 'card' | 'crypto' | 'ton') => Promise<void>;
   isLoading: boolean;
 };
 
 const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentModalProps) => {
-  const [tab, setTab] = useState<'card' | 'crypto'>('card');
+  const [tab, setTab] = useState<'card' | 'crypto' | 'ton'>('card');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -26,6 +27,9 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
     name: '',
   });
   const [walletAddress, setWalletAddress] = useState('');
+  
+  const [tonConnectUI] = useTonConnectUI();
+  const wallet = useTonWallet();
 
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +43,21 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
     await onPayment('crypto');
   };
 
+  const handleTonSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoading) return;
+    
+    if (!wallet) {
+      // Connect wallet first
+      await tonConnectUI.connectWallet();
+      return;
+    }
+    
+    await onPayment('ton');
+  };
+
+  const tonEquivalent = plan ? (plan.price / 1600).toFixed(4) : '0'; // Rough TON conversion
+
   if (!plan) return null;
 
   return (
@@ -51,18 +70,24 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="card" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto')}>
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="card" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto' | 'ton')}>
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="card" disabled={isLoading}>
               <div className="flex items-center space-x-2">
                 <CreditCard size={16} />
-                <span>Card Payment</span>
+                <span>Card</span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="crypto" disabled={isLoading}>
               <div className="flex items-center space-x-2">
                 <Wallet size={16} />
                 <span>Crypto</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="ton" disabled={isLoading}>
+              <div className="flex items-center space-x-2">
+                <Coins size={16} />
+                <span>TON</span>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -149,6 +174,46 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
               
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <><Spinner size="sm" className="mr-2" /> Verifying Payment...</> : "I've Sent the Payment"}
+              </Button>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="ton">
+            <form onSubmit={handleTonSubmit} className="space-y-4 py-2">
+              {!wallet ? (
+                <div className="bg-blue-50 p-4 rounded-md text-center">
+                  <Coins size={32} className="mx-auto text-blue-600 mb-2" />
+                  <p className="text-sm text-blue-700 mb-4">
+                    Connect your TON wallet to proceed with payment
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-blue-50 p-4 rounded-md">
+                    <p className="text-sm text-blue-700 mb-2">Connected Wallet:</p>
+                    <p className="font-mono text-xs break-all bg-white p-2 rounded border">
+                      {Address.parse(wallet.account.address).toString()}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-silver-50 p-4 rounded-md">
+                    <p className="text-sm text-silver-700 mb-2">Payment Amount:</p>
+                    <p className="font-bold text-lg">{tonEquivalent} TON</p>
+                    <p className="text-xs text-silver-600">
+                      Equivalent to ₦{plan.price.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <><Spinner size="sm" className="mr-2" /> Processing...</>
+                ) : !wallet ? (
+                  "Connect TON Wallet"
+                ) : (
+                  `Pay ${tonEquivalent} TON`
+                )}
               </Button>
             </form>
           </TabsContent>

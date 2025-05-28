@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
 
@@ -41,7 +40,7 @@ type PlanContextType = {
   vouchers: Voucher[];
   hotspots: Hotspot[];
   isLoading: boolean;
-  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto') => Promise<Voucher | null>;
+  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'ton') => Promise<Voucher | null>;
   activateVoucher: (voucherId: string) => Promise<boolean>;
 };
 
@@ -157,7 +156,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   }, [vouchers]);
 
   // Mock function to purchase a plan
-  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto'): Promise<Voucher | null> => {
+  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'ton'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
       // Find the selected plan
@@ -172,7 +171,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Simulate payment process
-      // In a real app, this would integrate with Flutterwave or a crypto payment gateway
+      // In a real app, this would integrate with Flutterwave, crypto gateway, or TON blockchain
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay
 
       // Generate a voucher
@@ -186,9 +185,11 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       // Add voucher to state
       setVouchers(prev => [...prev, voucher]);
 
+      const paymentMethodText = paymentMethod === 'ton' ? 'TON wallet' : paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
+      
       toast({
         title: "Purchase Successful",
-        description: `Your ${plan.name} voucher is ready to use.`,
+        description: `Your ${plan.name} voucher is ready to use. Paid with ${paymentMethodText}.`,
       });
 
       return voucher;
