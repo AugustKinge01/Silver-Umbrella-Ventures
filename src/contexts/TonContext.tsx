@@ -16,7 +16,7 @@ export const TonProvider = ({ children }: { children: ReactNode }) => {
       <TonContext.Provider value={{}}>
         {children}
       </TonContext.Provider>
-    </TonContext.Provider>
+    </TonConnectUIProvider>
   );
 };
 
