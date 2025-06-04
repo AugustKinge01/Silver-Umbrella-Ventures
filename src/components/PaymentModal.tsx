@@ -192,7 +192,7 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
                   <div className="bg-blue-50 p-4 rounded-md">
                     <p className="text-sm text-blue-700 mb-2">Connected Wallet:</p>
                     <p className="font-mono text-xs break-all bg-white p-2 rounded border">
-                      {Address.parse(wallet.account.address).toString()}
+                      {wallet.account.address}
                     </p>
                   </div>
                   
