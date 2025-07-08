@@ -1,247 +1,156 @@
 
-import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquare, Phone, Mail, ArrowRight } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import SupportTicketForm from "@/components/SupportTicketForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MessageSquare, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { usePlans } from "@/contexts/PlanContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SupportPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    issueType: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { supportTickets } = usePlans();
+  const { user } = useAuth();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Filter tickets for current user
+  const userTickets = supportTickets.filter(ticket => ticket.userId === user?.id);
 
-  const handleSelectChange = (value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      issueType: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.issueType || !formData.message) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill out all required fields.",
-        variant: "destructive",
-      });
-      return;
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'bg-red-100 text-red-600';
+      case 'high': return 'bg-orange-100 text-orange-600';
+      case 'medium': return 'bg-yellow-100 text-yellow-600';
+      case 'low': return 'bg-green-100 text-green-600';
+      default: return 'bg-gray-100 text-gray-600';
     }
-    
-    setIsSubmitting(true);
-    
-    // In a real app, this would submit to Supabase
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Support Request Sent",
-        description: "We've received your message and will respond shortly.",
-      });
-      
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        issueType: "",
-        message: "",
-      });
-    } catch (error) {
-      toast({
-        title: "Error Submitting Request",
-        description: "Please try again or contact us directly.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'open': return 'bg-blue-100 text-blue-600';
+      case 'in-progress': return 'bg-amber-100 text-amber-600';
+      case 'resolved': return 'bg-green-100 text-green-600';
+      case 'closed': return 'bg-gray-100 text-gray-600';
+      default: return 'bg-gray-100 text-gray-600';
     }
   };
 
   return (
     <Layout
-      title="Support"
-      description="Get help with your internet and power services"
+      title="Support & Help"
+      description="Get help with your Silver Umbrella services"
     >
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Support</CardTitle>
-              <CardDescription>
-                Fill out the form below and our team will get back to you as soon as possible.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Enter your name"
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="you@example.com"
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+234..."
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="issueType">Issue Type *</Label>
-                    <Select
-                      value={formData.issueType}
-                      onValueChange={handleSelectChange}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an issue" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="internet">Internet Service Issue</SelectItem>
-                        <SelectItem value="power">Power Service Issue</SelectItem>
-                        <SelectItem value="payment">Payment Problem</SelectItem>
-                        <SelectItem value="voucher">Voucher Not Working</SelectItem>
-                        <SelectItem value="account">Account Problem</SelectItem>
-                        <SelectItem value="other">Other Issue</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message *</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Please describe your issue in detail..."
-                    rows={5}
-                    disabled={isSubmitting}
-                    required
-                  />
-                </div>
-                
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Sending..." : "Submit Support Request"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Support Form */}
+        <div>
+          <SupportTicketForm />
         </div>
-        
-        <div className="space-y-4">
+
+        {/* Contact Information */}
+        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Contact Methods</CardTitle>
+              <CardTitle>Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Phone size={20} className="text-silver-500 mt-1" />
+              <div className="flex items-center gap-3">
+                <Phone size={20} className="text-silver-600" />
                 <div>
-                  <h3 className="font-medium">Phone Support</h3>
-                  <p className="text-sm text-silver-600">+234 700 0000 000</p>
-                  <p className="text-xs text-silver-500">Mon-Fri, 9am-5pm</p>
+                  <div className="font-medium">Phone Support</div>
+                  <div className="text-sm text-silver-600">+234 XXX XXX XXXX</div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <Mail size={20} className="text-silver-500 mt-1" />
+              <div className="flex items-center gap-3">
+                <Mail size={20} className="text-silver-600" />
                 <div>
-                  <h3 className="font-medium">Email</h3>
-                  <p className="text-sm text-silver-600">support@silverumbrella.network</p>
-                  <p className="text-xs text-silver-500">We aim to respond within 24 hours</p>
+                  <div className="font-medium">Email Support</div>
+                  <div className="text-sm text-silver-600">support@silverumbrella.ng</div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <MessageSquare size={20} className="text-silver-500 mt-1" />
+              <div className="flex items-center gap-3">
+                <MapPin size={20} className="text-silver-600" />
                 <div>
-                  <h3 className="font-medium">Telegram</h3>
-                  <p className="text-sm text-silver-600">@SilverUmbrellaSupport</p>
-                  <p className="text-xs text-silver-500">Live support during business hours</p>
+                  <div className="font-medium">Office Location</div>
+                  <div className="text-sm text-silver-600">Lagos, Nigeria</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Clock size={20} className="text-silver-600" />
+                <div>
+                  <div className="font-medium">Support Hours</div>
+                  <div className="text-sm text-silver-600">24/7 for urgent issues</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
+          {/* Quick Help */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">FAQ</CardTitle>
+              <CardTitle>Quick Help</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <div>
-                <h3 className="font-medium text-sm">How do I activate my voucher?</h3>
-                <p className="text-sm text-silver-600">Go to the Vouchers section and click "Activate" on your unused voucher.</p>
+                <div className="font-medium text-sm">Connection Issues</div>
+                <div className="text-xs text-silver-600">Check if you're within range of an active hotspot</div>
               </div>
               
               <div>
-                <h3 className="font-medium text-sm">What if I'm having connection issues?</h3>
-                <p className="text-sm text-silver-600">Try restarting your device or moving closer to a hotspot location.</p>
+                <div className="font-medium text-sm">Voucher Problems</div>
+                <div className="text-xs text-silver-600">Ensure your voucher is activated and not expired</div>
               </div>
               
               <div>
-                <h3 className="font-medium text-sm">Can I share my voucher?</h3>
-                <p className="text-sm text-silver-600">Vouchers are tied to your account and cannot be transferred.</p>
+                <div className="font-medium text-sm">Payment Issues</div>
+                <div className="text-xs text-silver-600">Verify your payment method and try again</div>
               </div>
               
-              <Button variant="link" className="px-0 flex items-center">
-                <span>View all FAQs</span>
-                <ArrowRight size={16} className="ml-1" />
-              </Button>
+              <div>
+                <div className="font-medium text-sm">Slow Speeds</div>
+                <div className="text-xs text-silver-600">Check signal strength and try moving closer to the hotspot</div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Support Tickets History */}
+      {userTickets.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Your Support Tickets</h2>
+          <div className="space-y-4">
+            {userTickets.map((ticket) => (
+              <Card key={ticket.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-base">{ticket.subject}</CardTitle>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge className={getPriorityColor(ticket.priority)}>
+                          {ticket.priority}
+                        </Badge>
+                        <Badge className={getStatusColor(ticket.status)}>
+                          {ticket.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-sm text-silver-600">
+                      {ticket.createdAt.toLocaleDateString()}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-silver-700 line-clamp-2">
+                    {ticket.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

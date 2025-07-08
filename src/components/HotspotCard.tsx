@@ -4,12 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Wifi, Zap } from "lucide-react";
 import { Hotspot } from "@/contexts/PlanContext";
 import SignalStrengthIndicator from "./SignalStrengthIndicator";
+import CapacityIndicator from "./CapacityIndicator";
+import EquipmentHealth from "./EquipmentHealth";
 
 type HotspotCardProps = {
   hotspot: Hotspot;
+  showDetails?: boolean;
 };
 
-const HotspotCard = ({ hotspot }: HotspotCardProps) => {
+const HotspotCard = ({ hotspot, showDetails = false }: HotspotCardProps) => {
   const statusColors = {
     active: "bg-green-100 text-green-600",
     inactive: "bg-red-100 text-red-600",
@@ -55,6 +58,17 @@ const HotspotCard = ({ hotspot }: HotspotCardProps) => {
             </Badge>
           )}
         </div>
+
+        {/* Capacity indicator */}
+        {hotspot.capacity && hotspot.status === 'active' && (
+          <div className="mb-4">
+            <CapacityIndicator 
+              capacity={hotspot.capacity} 
+              size="sm" 
+              showDetails={true}
+            />
+          </div>
+        )}
         
         {/* Detailed signal info for internet hotspots */}
         {hotspot.services.includes("internet") && hotspot.signalStrength && (
@@ -67,6 +81,13 @@ const HotspotCard = ({ hotspot }: HotspotCardProps) => {
                 size="sm"
               />
             </div>
+          </div>
+        )}
+
+        {/* Equipment health for detailed view */}
+        {showDetails && hotspot.equipmentHealth && (
+          <div className="mb-4">
+            <EquipmentHealth health={hotspot.equipmentHealth} compact={true} />
           </div>
         )}
         

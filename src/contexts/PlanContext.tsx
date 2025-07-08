@@ -32,6 +32,34 @@ export type SignalStrength = {
   lastUpdated: Date;
 };
 
+export type EquipmentHealth = {
+  temperature: number; // in Celsius
+  batteryLevel: number; // percentage
+  solarGeneration: number; // watts
+  powerConsumption: number; // watts
+  uptime: number; // hours
+  lastMaintenance: Date;
+};
+
+export type HotspotCapacity = {
+  currentUsers: number;
+  maxUsers: number;
+  utilizationRate: number; // percentage
+  queueLength: number;
+};
+
+export type SupportTicket = {
+  id: string;
+  userId: string;
+  hotspotId: string;
+  subject: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Hotspot = {
   id: string;
   name: string;
@@ -41,22 +69,27 @@ export type Hotspot = {
   services: Array<'internet' | 'power'>;
   distance?: number; // in kilometers
   signalStrength?: SignalStrength;
+  capacity?: HotspotCapacity;
+  equipmentHealth?: EquipmentHealth;
 };
 
 type PlanContextType = {
   plans: Plan[];
   vouchers: Voucher[];
   hotspots: Hotspot[];
+  supportTickets: SupportTicket[];
   isLoading: boolean;
   purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'ton') => Promise<Voucher | null>;
   activateVoucher: (voucherId: string) => Promise<boolean>;
   updateSignalStrengths: () => void;
+  submitSupportTicket: (ticket: Omit<SupportTicket, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
+  updateHotspotCapacity: () => void;
 };
 
 // Create the context
 const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
-// Mock data with signal strengths
+// Mock data with enhanced information
 const mockPlans: Plan[] = [
   {
     id: 'plan_1',
@@ -130,6 +163,20 @@ const mockHotspots: Hotspot[] = [
       quality: 'excellent',
       lastUpdated: new Date(),
     },
+    capacity: {
+      currentUsers: 45,
+      maxUsers: 200,
+      utilizationRate: 22.5,
+      queueLength: 0,
+    },
+    equipmentHealth: {
+      temperature: 32,
+      batteryLevel: 85,
+      solarGeneration: 650,
+      powerConsumption: 180,
+      uptime: 720,
+      lastMaintenance: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    },
   },
   {
     id: 'hotspot_2',
@@ -143,6 +190,20 @@ const mockHotspots: Hotspot[] = [
       rssi: -60,
       quality: 'good',
       lastUpdated: new Date(),
+    },
+    capacity: {
+      currentUsers: 120,
+      maxUsers: 200,
+      utilizationRate: 60,
+      queueLength: 5,
+    },
+    equipmentHealth: {
+      temperature: 35,
+      batteryLevel: 92,
+      solarGeneration: 580,
+      powerConsumption: 165,
+      uptime: 480,
+      lastMaintenance: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
     },
   },
   {
@@ -158,6 +219,20 @@ const mockHotspots: Hotspot[] = [
       quality: 'no-signal',
       lastUpdated: new Date(),
     },
+    capacity: {
+      currentUsers: 0,
+      maxUsers: 200,
+      utilizationRate: 0,
+      queueLength: 0,
+    },
+    equipmentHealth: {
+      temperature: 28,
+      batteryLevel: 65,
+      solarGeneration: 320,
+      powerConsumption: 45,
+      uptime: 0,
+      lastMaintenance: new Date(),
+    },
   },
 ];
 
@@ -166,6 +241,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [plans, setPlans] = useState<Plan[]>(mockPlans);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [hotspots, setHotspots] = useState<Hotspot[]>(mockHotspots);
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load vouchers from localStorage on mount
@@ -182,9 +258,12 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('silverUmbrella.vouchers', JSON.stringify(vouchers));
   }, [vouchers]);
 
-  // Update signal strengths periodically
+  // Update signal strengths and capacity periodically
   useEffect(() => {
-    const interval = setInterval(updateSignalStrengths, 30000); // Update every 30 seconds
+    const interval = setInterval(() => {
+      updateSignalStrengths();
+      updateHotspotCapacity();
+    }, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -204,9 +283,9 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
           };
         }
 
-        // Mock signal strength variations based on distance and random factors
+        // Mock signal strength variations
         const baseSignal = hotspot.distance ? Math.max(1, 4 - Math.floor(hotspot.distance / 2)) : 4;
-        const variation = Math.floor(Math.random() * 2) - 1; // -1, 0, or 1
+        const variation = Math.floor(Math.random() * 2) - 1;
         const level = Math.max(0, Math.min(4, baseSignal + variation));
         
         const rssiMap = { 0: -90, 1: -80, 2: -70, 3: -60, 4: -45 };
@@ -225,7 +304,78 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // Mock function to purchase a plan
+  // Function to update hotspot capacity
+  const updateHotspotCapacity = () => {
+    setHotspots(prevHotspots => 
+      prevHotspots.map(hotspot => {
+        if (hotspot.status === 'inactive' || hotspot.status === 'maintenance') {
+          return {
+            ...hotspot,
+            capacity: {
+              currentUsers: 0,
+              maxUsers: 200,
+              utilizationRate: 0,
+              queueLength: 0,
+            },
+          };
+        }
+
+        // Mock capacity variations
+        const baseUsers = hotspot.capacity?.currentUsers || 0;
+        const variation = Math.floor(Math.random() * 20) - 10;
+        const currentUsers = Math.max(0, Math.min(200, baseUsers + variation));
+        const utilizationRate = (currentUsers / 200) * 100;
+        const queueLength = currentUsers > 180 ? Math.floor(Math.random() * 10) : 0;
+
+        return {
+          ...hotspot,
+          capacity: {
+            currentUsers,
+            maxUsers: 200,
+            utilizationRate,
+            queueLength,
+          },
+          equipmentHealth: {
+            ...hotspot.equipmentHealth!,
+            temperature: 28 + Math.floor(Math.random() * 15),
+            batteryLevel: Math.max(20, Math.min(100, (hotspot.equipmentHealth?.batteryLevel || 80) + Math.floor(Math.random() * 10) - 5)),
+            solarGeneration: Math.max(0, 400 + Math.floor(Math.random() * 400)),
+            powerConsumption: 150 + Math.floor(Math.random() * 100),
+          },
+        };
+      })
+    );
+  };
+
+  // Submit support ticket
+  const submitSupportTicket = async (ticketData: Omit<SupportTicket, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
+    try {
+      const newTicket: SupportTicket = {
+        ...ticketData,
+        id: `ticket_${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      setSupportTickets(prev => [...prev, newTicket]);
+      
+      toast({
+        title: "Support Ticket Submitted",
+        description: "Your support request has been received. We'll get back to you soon.",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error submitting support ticket:', error);
+      toast({
+        title: "Submission Failed",
+        description: "Please try again or contact support directly.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'ton'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
@@ -345,10 +495,13 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       plans,
       vouchers,
       hotspots,
+      supportTickets,
       isLoading,
       purchasePlan,
       activateVoucher,
       updateSignalStrengths,
+      submitSupportTicket,
+      updateHotspotCapacity,
     }}>
       {children}
     </PlanContext.Provider>
