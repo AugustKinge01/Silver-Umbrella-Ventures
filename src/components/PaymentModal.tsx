@@ -8,7 +8,6 @@ import { CreditCard, Wallet, Coins } from "lucide-react";
 import { Plan } from "@/contexts/PlanContext";
 import { Spinner } from "@/components/ui/spinner";
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
-import { Address } from '@tonconnect/sdk';
 
 type PaymentModalProps = {
   isOpen: boolean;

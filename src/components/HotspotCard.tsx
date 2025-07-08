@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Wifi, Zap } from "lucide-react";
 import { Hotspot } from "@/contexts/PlanContext";
+import SignalStrengthIndicator from "./SignalStrengthIndicator";
 
 type HotspotCardProps = {
   hotspot: Hotspot;
@@ -23,6 +24,14 @@ const HotspotCard = ({ hotspot }: HotspotCardProps) => {
             {hotspot.status === "active" ? "Online" : 
              hotspot.status === "inactive" ? "Offline" : "Under Maintenance"}
           </div>
+          
+          {/* Signal strength indicator */}
+          {hotspot.services.includes("internet") && (
+            <SignalStrengthIndicator 
+              signalStrength={hotspot.signalStrength} 
+              size="sm"
+            />
+          )}
         </div>
         <CardTitle className="text-lg font-bold">{hotspot.name}</CardTitle>
       </CardHeader>
@@ -46,6 +55,20 @@ const HotspotCard = ({ hotspot }: HotspotCardProps) => {
             </Badge>
           )}
         </div>
+        
+        {/* Detailed signal info for internet hotspots */}
+        {hotspot.services.includes("internet") && hotspot.signalStrength && (
+          <div className="mb-4 p-3 bg-silver-50 rounded-md">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-silver-700">Signal Quality</span>
+              <SignalStrengthIndicator 
+                signalStrength={hotspot.signalStrength} 
+                showText={true}
+                size="sm"
+              />
+            </div>
+          </div>
+        )}
         
         {hotspot.distance && (
           <div className="text-sm text-silver-600">

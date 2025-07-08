@@ -25,6 +25,13 @@ export type Voucher = {
   remainingTime?: number; // in minutes
 };
 
+export type SignalStrength = {
+  level: number; // 0-4 (0 = no signal, 4 = excellent)
+  rssi: number; // Signal strength in dBm
+  quality: 'excellent' | 'good' | 'fair' | 'poor' | 'no-signal';
+  lastUpdated: Date;
+};
+
 export type Hotspot = {
   id: string;
   name: string;
@@ -33,6 +40,7 @@ export type Hotspot = {
   status: 'active' | 'inactive' | 'maintenance';
   services: Array<'internet' | 'power'>;
   distance?: number; // in kilometers
+  signalStrength?: SignalStrength;
 };
 
 type PlanContextType = {
@@ -42,12 +50,13 @@ type PlanContextType = {
   isLoading: boolean;
   purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'ton') => Promise<Voucher | null>;
   activateVoucher: (voucherId: string) => Promise<boolean>;
+  updateSignalStrengths: () => void;
 };
 
 // Create the context
 const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
-// Mock data
+// Mock data with signal strengths
 const mockPlans: Plan[] = [
   {
     id: 'plan_1',
@@ -115,6 +124,12 @@ const mockHotspots: Hotspot[] = [
     coordinates: [7.8126, 5.0677],
     status: 'active',
     services: ['internet', 'power'],
+    signalStrength: {
+      level: 4,
+      rssi: -45,
+      quality: 'excellent',
+      lastUpdated: new Date(),
+    },
   },
   {
     id: 'hotspot_2',
@@ -123,6 +138,12 @@ const mockHotspots: Hotspot[] = [
     coordinates: [7.7173, 5.2193],
     status: 'active',
     services: ['internet'],
+    signalStrength: {
+      level: 3,
+      rssi: -60,
+      quality: 'good',
+      lastUpdated: new Date(),
+    },
   },
   {
     id: 'hotspot_3',
@@ -131,6 +152,12 @@ const mockHotspots: Hotspot[] = [
     coordinates: [7.6232, 5.2219],
     status: 'maintenance',
     services: ['internet', 'power'],
+    signalStrength: {
+      level: 0,
+      rssi: -90,
+      quality: 'no-signal',
+      lastUpdated: new Date(),
+    },
   },
 ];
 
@@ -154,6 +181,49 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem('silverUmbrella.vouchers', JSON.stringify(vouchers));
   }, [vouchers]);
+
+  // Update signal strengths periodically
+  useEffect(() => {
+    const interval = setInterval(updateSignalStrengths, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  // Function to update signal strengths
+  const updateSignalStrengths = () => {
+    setHotspots(prevHotspots => 
+      prevHotspots.map(hotspot => {
+        if (hotspot.status === 'inactive' || hotspot.status === 'maintenance') {
+          return {
+            ...hotspot,
+            signalStrength: {
+              level: 0,
+              rssi: -90,
+              quality: 'no-signal' as const,
+              lastUpdated: new Date(),
+            },
+          };
+        }
+
+        // Mock signal strength variations based on distance and random factors
+        const baseSignal = hotspot.distance ? Math.max(1, 4 - Math.floor(hotspot.distance / 2)) : 4;
+        const variation = Math.floor(Math.random() * 2) - 1; // -1, 0, or 1
+        const level = Math.max(0, Math.min(4, baseSignal + variation));
+        
+        const rssiMap = { 0: -90, 1: -80, 2: -70, 3: -60, 4: -45 };
+        const qualityMap = { 0: 'no-signal', 1: 'poor', 2: 'fair', 3: 'good', 4: 'excellent' } as const;
+
+        return {
+          ...hotspot,
+          signalStrength: {
+            level,
+            rssi: rssiMap[level as keyof typeof rssiMap] + Math.floor(Math.random() * 10) - 5,
+            quality: qualityMap[level as keyof typeof qualityMap],
+            lastUpdated: new Date(),
+          },
+        };
+      })
+    );
+  };
 
   // Mock function to purchase a plan
   const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'ton'): Promise<Voucher | null> => {
@@ -278,6 +348,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       isLoading,
       purchasePlan,
       activateVoucher,
+      updateSignalStrengths,
     }}>
       {children}
     </PlanContext.Provider>
