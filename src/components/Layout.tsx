@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare } from "lucide-react";
+import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare, Gift } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type LayoutProps = {
@@ -23,12 +23,14 @@ const Layout = ({ children, title, description }: LayoutProps) => {
         { name: "Dashboard", href: "/admin", icon: <Wifi size={20} /> },
         { name: "Plans", href: "/admin/plans", icon: <Calendar size={20} /> },
         { name: "Vouchers", href: "/admin/vouchers", icon: <CreditCard size={20} /> },
+        { name: "Rewards", href: "/admin/rewards", icon: <Gift size={20} /> },
         { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
       ]
     : [
         { name: "Dashboard", href: "/dashboard", icon: <Wifi size={20} /> },
         { name: "Plans", href: "/plans", icon: <Calendar size={20} /> },
         { name: "Vouchers", href: "/vouchers", icon: <CreditCard size={20} /> },
+        { name: "Rewards", href: "/rewards", icon: <Gift size={20} /> },
         { name: "Hotspots", href: "/hotspots", icon: <Zap size={20} /> },
         { name: "Support", href: "/support", icon: <MessageSquare size={20} /> },
       ];

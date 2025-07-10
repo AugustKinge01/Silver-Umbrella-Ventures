@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,9 +16,11 @@ import PlansPage from "./pages/PlansPage";
 import VouchersPage from "./pages/VouchersPage";
 import HotspotsPage from "./pages/HotspotsPage";
 import SupportPage from "./pages/SupportPage";
+import RewardsPage from "./pages/RewardsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPlans from "./pages/admin/AdminPlans";
 import AdminVouchers from "./pages/admin/AdminVouchers";
+import AdminRewards from "./pages/admin/AdminRewards";
 import NotFound from "./pages/NotFound";
 
 // Component for protected routes
@@ -43,6 +46,7 @@ const App = () => (
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
                 <Route path="/vouchers" element={<ProtectedRoute><VouchersPage /></ProtectedRoute>} />
+                <Route path="/rewards" element={<ProtectedRoute><RewardsPage /></ProtectedRoute>} />
                 <Route path="/hotspots" element={<ProtectedRoute><HotspotsPage /></ProtectedRoute>} />
                 <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
                 
@@ -50,6 +54,7 @@ const App = () => (
                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                 <Route path="/admin/plans" element={<AdminRoute><AdminPlans /></AdminRoute>} />
                 <Route path="/admin/vouchers" element={<AdminRoute><AdminVouchers /></AdminRoute>} />
+                <Route path="/admin/rewards" element={<AdminRoute><AdminRewards /></AdminRoute>} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
