@@ -13,13 +13,13 @@ const Index = () => {
   const appUrl = window.location.origin;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-silver-50 via-white to-silver-100">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Hero section with modern gradient and floating elements */}
-      <div className="relative bg-silver-900 bg-gradient-to-br from-silver-900 via-silver-800 to-silver-700 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Floating background elements */}
         <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-silver-300/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-silver-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
         </div>
 
@@ -37,9 +37,9 @@ const Index = () => {
                 <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"> Future</span>
               </h1>
               
-              <p className="text-xl md:text-2xl mb-8 text-silver-200 leading-relaxed">
+              <p className="text-xl md:text-2xl mb-8 text-slate-300 leading-relaxed">
                 Decentralized internet & solar power for rural Nigeria. 
-                <span className="text-amber-300 font-semibold"> Earn rewards</span> by inviting friends!
+                <span className="text-amber-400 font-semibold"> Earn rewards</span> by inviting friends!
               </p>
 
               {/* Reward System Spotlight */}
@@ -51,20 +51,20 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl font-bold text-white">Earn While You Share!</h3>
                   </div>
-                  <p className="text-amber-200 mb-4">
-                    Get <span className="font-bold text-amber-300">50 points</span> for every friend you invite. 
+                  <p className="text-amber-100 mb-4">
+                    Get <span className="font-bold text-amber-200">50 points</span> for every friend you invite. 
                     Redeem points for free data and power!
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-300">
+                    <Badge variant="secondary" className="bg-amber-500/30 text-amber-100 border-amber-500/50">
                       <Trophy className="w-3 h-3 mr-1" />
                       Free Internet
                     </Badge>
-                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-300">
+                    <Badge variant="secondary" className="bg-amber-500/30 text-amber-100 border-amber-500/50">
                       <Zap className="w-3 h-3 mr-1" />
                       Free Power
                     </Badge>
-                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-300">
+                    <Badge variant="secondary" className="bg-amber-500/30 text-amber-100 border-amber-500/50">
                       <Users className="w-3 h-3 mr-1" />
                       Growing Community
                     </Badge>
@@ -118,7 +118,7 @@ const Index = () => {
                       <Wifi size={32} className="text-white" />
                     </div>
                     <h3 className="font-bold text-xl text-white mb-2">Lightning Fast</h3>
-                    <p className="text-silver-200">Starlink-powered internet up to 100 Mbps</p>
+                    <p className="text-slate-300">Starlink-powered internet up to 100 Mbps</p>
                     <Badge className="mt-3 bg-blue-500/20 text-blue-300 border-blue-500/30">
                       High Speed
                     </Badge>
@@ -132,7 +132,7 @@ const Index = () => {
                       <Zap size={32} className="text-white" />
                     </div>
                     <h3 className="font-bold text-xl text-white mb-2">Clean Energy</h3>
-                    <p className="text-silver-200">Solar mini-grid solutions 24/7</p>
+                    <p className="text-slate-300">Solar mini-grid solutions 24/7</p>
                     <Badge className="mt-3 bg-amber-500/20 text-amber-300 border-amber-500/30">
                       Eco-Friendly
                     </Badge>
@@ -146,7 +146,7 @@ const Index = () => {
                       <Gift size={32} className="text-white" />
                     </div>
                     <h3 className="font-bold text-xl text-white mb-2">Invite & Earn</h3>
-                    <p className="text-silver-200 mb-3">Share with friends, earn points, get free services!</p>
+                    <p className="text-slate-300 mb-3">Share with friends, earn points, get free services!</p>
                     <div className="flex justify-center gap-2">
                       <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">
                         <Heart className="w-3 h-3 mr-1" />
@@ -162,17 +162,17 @@ const Index = () => {
       </div>
 
       {/* How it works section with modern cards */}
-      <div className="py-20 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-silver-50/50 to-transparent"></div>
+      <div className="py-20 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent"></div>
         <div className="relative container mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
-            <Badge className="bg-silver-100 text-silver-700 mb-4">
+            <Badge className="bg-muted text-muted-foreground mb-4">
               Simple Process
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-silver-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Get Connected in <span className="text-amber-500">3 Steps</span>
             </h2>
-            <p className="text-xl text-silver-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Join our growing community and start earning rewards immediately
             </p>
           </div>
@@ -201,16 +201,16 @@ const Index = () => {
                 color: "from-amber-500 to-orange-600"
               }
             ].map((step, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg">
+                <Card key={index} className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-card">
                 <CardContent className="p-8 text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-silver-50 to-white opacity-50"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-card opacity-80"></div>
                   <div className="relative">
-                    <div className="text-6xl font-bold text-silver-200 mb-4">{step.step}</div>
+                    <div className="text-6xl font-bold text-muted mb-4">{step.step}</div>
                     <div className={`bg-gradient-to-br ${step.color} rounded-full p-4 w-16 h-16 mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
                       <step.icon size={32} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-silver-900 mb-4">{step.title}</h3>
-                    <p className="text-silver-600 leading-relaxed">{step.description}</p>
+                    <h3 className="text-xl font-bold text-card-foreground mb-4">{step.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -220,25 +220,25 @@ const Index = () => {
       </div>
       
       {/* QR Code section with modern design */}
-      <div className="bg-gradient-to-br from-silver-100 to-silver-200 py-16">
+      <div className="bg-gradient-to-br from-muted to-muted/80 py-16">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-4xl mx-auto">
+          <div className="bg-card rounded-3xl shadow-2xl p-8 md:p-12 max-w-4xl mx-auto border">
             <div className="text-center mb-8">
               <Badge className="bg-amber-100 text-amber-700 mb-4">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Mobile First
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-silver-900 mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">
                 Instant Mobile Access
               </h2>
-              <p className="text-xl text-silver-600 max-w-lg mx-auto">
+              <p className="text-xl text-muted-foreground max-w-lg mx-auto">
                 Scan with your phone camera to access Silver Umbrella instantly - no app download needed!
               </p>
             </div>
             
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="md:w-1/2">
-                <div className="bg-gradient-to-br from-silver-50 to-white p-6 rounded-2xl shadow-lg">
+                <div className="bg-gradient-to-br from-muted/50 to-background p-6 rounded-2xl shadow-lg border">
                   <QRCodeGenerator 
                     url={appUrl}
                     title="Access Silver Umbrella" 
@@ -248,23 +248,23 @@ const Index = () => {
               </div>
               
               <div className="md:w-1/2 space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-silver-50 rounded-xl">
+                <div className="flex items-center gap-4 p-4 bg-muted rounded-xl">
                   <div className="bg-amber-500 p-2 rounded-full">
                     <span className="text-white font-bold">1</span>
                   </div>
-                  <span className="text-silver-700">Open camera app</span>
+                  <span className="text-card-foreground">Open camera app</span>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-silver-50 rounded-xl">
+                <div className="flex items-center gap-4 p-4 bg-muted rounded-xl">
                   <div className="bg-amber-500 p-2 rounded-full">
                     <span className="text-white font-bold">2</span>
                   </div>
-                  <span className="text-silver-700">Point at QR code</span>
+                  <span className="text-card-foreground">Point at QR code</span>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-silver-50 rounded-xl">
+                <div className="flex items-center gap-4 p-4 bg-muted rounded-xl">
                   <div className="bg-amber-500 p-2 rounded-full">
                     <span className="text-white font-bold">3</span>
                   </div>
-                  <span className="text-silver-700">Tap notification to open</span>
+                  <span className="text-card-foreground">Tap notification to open</span>
                 </div>
               </div>
             </div>
@@ -273,14 +273,14 @@ const Index = () => {
       </div>
       
       {/* CTA section with gradient */}
-      <div className="bg-gradient-to-r from-silver-900 via-silver-800 to-silver-900 py-20 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 py-20 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative container mx-auto px-4 md:px-6 text-center">
-          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 mb-6">
+          <Badge className="bg-amber-500/20 text-amber-200 border-amber-500/30 mb-6">
             <Users className="w-4 h-4 mr-2" />
             Join 500+ Happy Users
           </Badge>
@@ -289,7 +289,7 @@ const Index = () => {
             Ready to Power Your Community?
           </h2>
           
-          <p className="text-xl text-silver-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
             Be part of the infrastructure revolution in rural Nigeria. 
             Start earning rewards while helping your neighbors get connected.
           </p>
@@ -332,7 +332,7 @@ const Index = () => {
       </div>
       
       {/* Footer with modern styling */}
-      <footer className="bg-silver-900 text-silver-300 py-16">
+      <footer className="bg-slate-900 text-slate-300 py-16">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -342,12 +342,12 @@ const Index = () => {
                 </div>
                 <span className="font-bold text-2xl text-white">Silver Umbrella</span>
               </div>
-              <p className="text-lg mb-6 text-silver-400 leading-relaxed">
+              <p className="text-lg mb-6 text-slate-400 leading-relaxed">
                 Building the future of rural infrastructure through decentralized networks and community rewards.
               </p>
               <div className="flex space-x-4">
                 {['Twitter', 'Telegram', 'WhatsApp'].map((social) => (
-                  <a key={social} href="#" className="hover:text-amber-400 transition-colors px-3 py-2 rounded-lg hover:bg-silver-800">
+                  <a key={social} href="#" className="hover:text-amber-400 transition-colors px-3 py-2 rounded-lg hover:bg-slate-800">
                     {social}
                   </a>
                 ))}
@@ -356,7 +356,7 @@ const Index = () => {
             
             <div>
               <h3 className="font-bold text-white text-lg mb-6">Service Areas</h3>
-              <ul className="space-y-3 text-silver-400">
+              <ul className="space-y-3 text-slate-400">
                 <li className="hover:text-amber-400 transition-colors">Ijero-Ekiti</li>
                 <li className="hover:text-amber-400 transition-colors">Ekiti State University</li>
                 <li className="hover:text-amber-400 transition-colors">Ado-Ekiti</li>
@@ -366,10 +366,10 @@ const Index = () => {
             
             <div>
               <h3 className="font-bold text-white text-lg mb-6">Get in Touch</h3>
-              <div className="space-y-3 text-silver-400">
+              <div className="space-y-3 text-slate-400">
                 <p className="hover:text-amber-400 transition-colors">info@silverumbrella.network</p>
                 <p className="hover:text-amber-400 transition-colors">+234 700 0000 000</p>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
+                <Badge className="bg-amber-500/20 text-amber-200 border-amber-500/30">
                   <Heart className="w-3 h-3 mr-1" />
                   Community First
                 </Badge>
@@ -377,8 +377,8 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="border-t border-silver-800 mt-12 pt-8 text-center">
-            <p className="text-silver-500">
+          <div className="border-t border-slate-800 mt-12 pt-8 text-center">
+            <p className="text-slate-500">
               © {new Date().getFullYear()} Silver Umbrella Ventures. Building infrastructure where institutions have failed.
             </p>
           </div>
