@@ -15,15 +15,15 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-silver-50 via-white to-silver-100">
       {/* Hero section with modern gradient and floating elements */}
-      <div className="relative bg-gradient-to-br from-silver-900 via-silver-800 to-silver-700 overflow-hidden">
+      <div className="relative bg-silver-900 bg-gradient-to-br from-silver-900 via-silver-800 to-silver-700 overflow-hidden">
         {/* Floating background elements */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-silver-300/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-silver-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
         </div>
 
-        <div className="relative container mx-auto px-4 md:px-6 py-16 md:py-24">
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 md:py-24">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left content */}
             <div className="lg:w-1/2 text-center lg:text-left">
@@ -332,7 +332,7 @@ const Index = () => {
       </div>
       
       {/* Footer with modern styling */}
-      <footer className="bg-silver-950 text-silver-300 py-16">
+      <footer className="bg-silver-900 text-silver-300 py-16">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
