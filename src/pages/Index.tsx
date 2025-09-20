@@ -6,6 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Wifi, Zap, Gift, Star, Users, ArrowRight, Sparkles, Trophy, Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
+import heroImage from "@/assets/hero-rural-connectivity.jpg";
+import solarWifiImage from "@/assets/solar-wifi-illustration.jpg";
+import communityRewardsImage from "@/assets/community-rewards.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -14,8 +17,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Hero section with modern gradient and floating elements */}
+      {/* Hero section with stunning background */}
       <div className="relative bg-background overflow-hidden">
+        {/* Hero background image */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt="Rural connectivity infrastructure"
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-background/60"></div>
+        </div>
 
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 md:py-24">
           <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -89,20 +101,30 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right content - Visual cards */}
+            {/* Right content - Visual cards with graphics */}
             <div className="lg:w-1/2 relative">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Internet Card */}
+                {/* Internet & Power Card with stunning visual */}
                 <Card className="bg-card border hover:bg-accent/30 transition-all duration-300 transform hover:scale-105 hover:rotate-1">
-                  <CardContent className="p-6 text-center">
-                    <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg">
-                      <Wifi size={32} className="text-primary-foreground" />
+                  <CardContent className="p-6 text-center relative overflow-hidden">
+                    <div className="absolute inset-0">
+                      <img 
+                        src={solarWifiImage} 
+                        alt="Solar power and WiFi infrastructure"
+                        className="w-full h-full object-cover opacity-30"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-card/80 to-card/95"></div>
                     </div>
-                    <h3 className="font-bold text-xl text-card-foreground mb-2">Lightning Fast</h3>
-                    <p className="text-muted-foreground">Starlink-powered internet up to 100 Mbps</p>
-                    <Badge variant="secondary" className="mt-3">
-                      High Speed
-                    </Badge>
+                    <div className="relative z-10">
+                      <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg">
+                        <Wifi size={32} className="text-primary-foreground" />
+                      </div>
+                      <h3 className="font-bold text-xl text-card-foreground mb-2">Lightning Fast</h3>
+                      <p className="text-muted-foreground">Starlink-powered internet up to 100 Mbps</p>
+                      <Badge variant="secondary" className="mt-3">
+                        High Speed
+                      </Badge>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -120,9 +142,17 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                {/* Rewards Card - Spans both columns */}
-                <Card className="md:col-span-2 bg-card border transition-all duration-300 transform hover:scale-105">
-                  <CardContent className="p-6 text-center">
+                {/* Rewards Card with community visual - Spans both columns */}
+                <Card className="md:col-span-2 bg-card border transition-all duration-300 transform hover:scale-105 relative overflow-hidden">
+                  <div className="absolute inset-0">
+                    <img 
+                      src={communityRewardsImage} 
+                      alt="Community rewards and connectivity"
+                      className="w-full h-full object-cover opacity-25"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card/95 to-card/80"></div>
+                  </div>
+                  <CardContent className="p-6 text-center relative z-10">
                     <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg">
                       <Gift size={32} className="text-primary-foreground" />
                     </div>
