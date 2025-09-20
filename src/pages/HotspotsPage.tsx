@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Search, Wifi, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { usePlans } from "@/contexts/PlanContext";
+import hotspotsGraphicImage from "@/assets/hotspots-graphic.jpg";
 
 const HotspotsPage = () => {
   const { hotspots } = usePlans();
@@ -46,6 +47,22 @@ const HotspotsPage = () => {
       title="Find Hotspots"
       description="Locate Silver Umbrella hotspots near you"
     >
+      {/* Hotspots hero section */}
+      <div className="relative bg-gradient-to-br from-blue-50/80 to-green-50/80 rounded-xl p-8 mb-8 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={hotspotsGraphicImage} 
+            alt="Network hotspots and coverage"
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/85 to-background/70"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <h1 className="text-3xl font-bold mb-3">Find Network Hotspots</h1>
+          <p className="text-lg text-muted-foreground">Discover internet and power access points in your area</p>
+        </div>
+      </div>
+
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
           <div className="relative flex-1">

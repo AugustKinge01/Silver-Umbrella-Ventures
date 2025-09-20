@@ -10,6 +10,7 @@ import Layout from '@/components/Layout';
 import { usePlans } from '@/contexts/PlanContext';
 import { Gift, Share2, Coins, History, Trophy } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import rewardsGraphicImage from "@/assets/rewards-graphic.jpg";
 
 const RewardsPage = () => {
   const { 
@@ -51,6 +52,22 @@ const RewardsPage = () => {
 
   return (
     <Layout title="Rewards & Points" description="Earn points by inviting friends and redeem for free data or power">
+      {/* Rewards hero section */}
+      <div className="relative bg-gradient-to-br from-amber-50/80 to-yellow-50/80 rounded-xl p-8 mb-8 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={rewardsGraphicImage} 
+            alt="Rewards and community system"
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/60"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <h1 className="text-3xl font-bold mb-3 text-amber-800">Earn & Redeem Rewards</h1>
+          <p className="text-lg text-amber-700">Share with friends, build community, get rewarded!</p>
+        </div>
+      </div>
+
       <div className="space-y-6">
         {/* Points Balance */}
         <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">

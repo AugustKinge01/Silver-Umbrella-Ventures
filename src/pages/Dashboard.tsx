@@ -8,6 +8,7 @@ import { Wifi, Zap, CreditCard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePlans } from "@/contexts/PlanContext";
 import VoucherCard from "@/components/VoucherCard";
+import dashboardHeroImage from "@/assets/dashboard-hero.jpg";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -64,6 +65,22 @@ const Dashboard = () => {
       title={`Welcome${user?.name ? ', ' + user.name : ''}`}
       description="Manage your internet and power access"
     >
+      {/* Hero section with dashboard graphic */}
+      <div className="relative bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-6 mb-6 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={dashboardHeroImage} 
+            alt="Dashboard overview"
+            className="w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/60"></div>
+        </div>
+        <div className="relative z-10">
+          <h1 className="text-2xl font-bold mb-2">Your Dashboard</h1>
+          <p className="text-muted-foreground">Monitor your connectivity and power status in real-time</p>
+        </div>
+      </div>
+
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <Card>

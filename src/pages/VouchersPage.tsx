@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CreditCard } from "lucide-react";
+import vouchersGraphicImage from "@/assets/vouchers-graphic.jpg";
 
 const VouchersPage = () => {
   const navigate = useNavigate();
@@ -52,6 +53,22 @@ const VouchersPage = () => {
       title="My Vouchers"
       description="Manage your internet and power vouchers"
     >
+      {/* Vouchers hero section */}
+      <div className="relative bg-gradient-to-br from-purple-50/80 to-pink-50/80 rounded-xl p-8 mb-8 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={vouchersGraphicImage} 
+            alt="Digital vouchers and QR codes"
+            className="w-full h-full object-cover opacity-45"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/85 to-background/70"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <h1 className="text-3xl font-bold mb-3">Manage Your Vouchers</h1>
+          <p className="text-lg text-muted-foreground">View, activate, and track your internet and power vouchers</p>
+        </div>
+      </div>
+
       <Tabs defaultValue="all" value={filterType} onValueChange={(value) => setFilterType(value as PlanType | 'all')}>
         <TabsList className="mb-6">
           <TabsTrigger value="all">All Vouchers</TabsTrigger>

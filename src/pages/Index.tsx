@@ -9,6 +9,7 @@ import QRCodeGenerator from "@/components/QRCodeGenerator";
 import heroImage from "@/assets/hero-rural-connectivity.jpg";
 import solarWifiImage from "@/assets/solar-wifi-illustration.jpg";
 import communityRewardsImage from "@/assets/community-rewards.jpg";
+import processStepsImage from "@/assets/process-steps.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -172,9 +173,16 @@ const Index = () => {
         </div>
       </div>
 
-      {/* How it works section with modern cards */}
+      {/* How it works section with visual background */}
       <div className="py-20 bg-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent"></div>
+        <div className="absolute inset-0">
+          <img 
+            src={processStepsImage} 
+            alt="Step by step process visualization"
+            className="w-full h-full object-cover opacity-10"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent"></div>
+        </div>
         <div className="relative container mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <Badge className="bg-muted text-muted-foreground mb-4">

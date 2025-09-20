@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { usePlans } from "@/contexts/PlanContext";
 import { useAuth } from "@/contexts/AuthContext";
+import supportGraphicImage from "@/assets/support-graphic.jpg";
 
 const SupportPage = () => {
   const { supportTickets } = usePlans();
@@ -39,6 +40,22 @@ const SupportPage = () => {
       title="Support & Help"
       description="Get help with your Silver Umbrella services"
     >
+      {/* Support hero section */}
+      <div className="relative bg-gradient-to-br from-green-50/80 to-blue-50/80 rounded-xl p-8 mb-8 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={supportGraphicImage} 
+            alt="Customer support and help"
+            className="w-full h-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-background/75"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <h1 className="text-3xl font-bold mb-3">Get Support & Help</h1>
+          <p className="text-lg text-muted-foreground">We're here to help you 24/7 with any issues or questions</p>
+        </div>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Support Form */}
         <div>
