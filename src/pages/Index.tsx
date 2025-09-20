@@ -24,9 +24,9 @@ const Index = () => {
           <img 
             src={heroImage} 
             alt="Rural connectivity infrastructure"
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover opacity-70"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-background/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-background/70 to-background/30"></div>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 md:py-24">
@@ -111,17 +111,17 @@ const Index = () => {
                       <img 
                         src={solarWifiImage} 
                         alt="Solar power and WiFi infrastructure"
-                        className="w-full h-full object-cover opacity-30"
+                        className="w-full h-full object-cover opacity-80"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-card/80 to-card/95"></div>
+                      <div className="absolute inset-0 bg-gradient-to-b from-card/50 to-card/70"></div>
                     </div>
                     <div className="relative z-10">
-                      <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg">
+                      <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg backdrop-blur-sm">
                         <Wifi size={32} className="text-primary-foreground" />
                       </div>
-                      <h3 className="font-bold text-xl text-card-foreground mb-2">Lightning Fast</h3>
-                      <p className="text-muted-foreground">Starlink-powered internet up to 100 Mbps</p>
-                      <Badge variant="secondary" className="mt-3">
+                      <h3 className="font-bold text-xl text-card-foreground mb-2 drop-shadow-sm">Lightning Fast</h3>
+                      <p className="text-card-foreground font-medium drop-shadow-sm">Starlink-powered internet up to 100 Mbps</p>
+                      <Badge variant="secondary" className="mt-3 backdrop-blur-sm">
                         High Speed
                       </Badge>
                     </div>
@@ -148,18 +148,18 @@ const Index = () => {
                     <img 
                       src={communityRewardsImage} 
                       alt="Community rewards and connectivity"
-                      className="w-full h-full object-cover opacity-25"
+                      className="w-full h-full object-cover opacity-75"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card/95 to-card/80"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-card/40"></div>
                   </div>
                   <CardContent className="p-6 text-center relative z-10">
-                    <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg">
+                    <div className="bg-primary rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg backdrop-blur-sm">
                       <Gift size={32} className="text-primary-foreground" />
                     </div>
-                    <h3 className="font-bold text-xl text-card-foreground mb-2">Invite & Earn</h3>
-                    <p className="text-muted-foreground mb-3">Share with friends, earn points, get free services!</p>
+                    <h3 className="font-bold text-xl text-card-foreground mb-2 drop-shadow-sm">Invite & Earn</h3>
+                    <p className="text-card-foreground font-medium mb-3 drop-shadow-sm">Share with friends, earn points, get free services!</p>
                     <div className="flex justify-center gap-2">
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" className="backdrop-blur-sm">
                         <Heart className="w-3 h-3 mr-1" />
                         Community Rewards
                       </Badge>
