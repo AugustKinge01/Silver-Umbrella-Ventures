@@ -19,6 +19,37 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Header with prominent Silver Umbrella Ventures branding */}
+      <header className="relative z-50 bg-background/95 backdrop-blur-sm border-b border-border/10">
+        <div className="container mx-auto px-4 md:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img 
+                src={silverUmbrellaLogo} 
+                alt="Silver Umbrella Ventures"
+                className="h-12 w-auto"
+              />
+              <div>
+                <h1 className="font-bold text-xl text-foreground">Silver Umbrella Ventures</h1>
+                <p className="text-sm text-muted-foreground">Powering Rural Nigeria's Future</p>
+              </div>
+            </div>
+            
+            {user ? (
+              <div className="flex items-center gap-3">
+                <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
+                  Dashboard
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={() => navigate('/login')}>
+                Get Started
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
+
       {/* Hero section with stunning background */}
       <div className="relative bg-background overflow-hidden">
         {/* Hero background image */}
