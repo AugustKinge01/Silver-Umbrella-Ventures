@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare, Gift } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import silverUmbrellaLogo from "@/assets/silver-umbrella-logo.png";
 
 type LayoutProps = {
   children: ReactNode;
@@ -40,11 +41,13 @@ const Layout = ({ children, title, description }: LayoutProps) => {
       {/* Top Navigation */}
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-silver-300 text-white p-1 rounded-md">
-              <Zap size={24} />
-            </div>
-            <span className="font-bold text-xl text-silver-900">Silver Umbrella</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src={silverUmbrellaLogo} 
+              alt="Silver Umbrella Ventures"
+              className="h-10 w-auto"
+            />
+            <span className="font-bold text-xl text-silver-900">Silver Umbrella Ventures</span>
           </Link>
           
           {user && (

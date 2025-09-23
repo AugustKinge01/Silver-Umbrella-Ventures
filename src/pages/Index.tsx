@@ -10,6 +10,7 @@ import heroImage from "@/assets/hero-rural-connectivity.jpg";
 import solarWifiImage from "@/assets/solar-wifi-illustration.jpg";
 import communityRewardsImage from "@/assets/community-rewards.jpg";
 import processStepsImage from "@/assets/process-steps.jpg";
+import silverUmbrellaLogo from "@/assets/silver-umbrella-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -250,8 +251,8 @@ const Index = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">
                 Instant Mobile Access
               </h2>
-              <p className="text-xl text-muted-foreground max-w-lg mx-auto">
-                Scan with your phone camera to access Silver Umbrella instantly - no app download needed!
+               <p className="text-xl text-muted-foreground max-w-lg mx-auto">
+                Scan with your phone camera to access Silver Umbrella Ventures instantly - no app download needed!
               </p>
             </div>
             
@@ -260,7 +261,7 @@ const Index = () => {
                 <div className="bg-gradient-to-br from-muted/50 to-background p-6 rounded-2xl shadow-lg border">
                   <QRCodeGenerator 
                     url={appUrl}
-                    title="Access Silver Umbrella" 
+                    title="Access Silver Umbrella Ventures" 
                     description="Scan to open on your device" 
                   />
                 </div>
@@ -345,10 +346,12 @@ const Index = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-6">
-                <div className="bg-primary p-2 rounded-lg">
-                  <Zap size={24} className="text-primary-foreground" />
-                </div>
-                <span className="font-bold text-2xl text-foreground">Silver Umbrella</span>
+                <img 
+                  src={silverUmbrellaLogo} 
+                  alt="Silver Umbrella Ventures"
+                  className="h-12 w-auto"
+                />
+                <span className="font-bold text-2xl text-foreground">Silver Umbrella Ventures</span>
               </div>
               <p className="text-lg mb-6 text-muted-foreground leading-relaxed">
                 Building the future of rural infrastructure through decentralized networks and community rewards.
