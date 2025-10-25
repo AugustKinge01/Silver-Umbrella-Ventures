@@ -66,78 +66,84 @@ const Dashboard = () => {
       description="Manage your internet and power access"
     >
       {/* Hero section with dashboard graphic */}
-      <div className="relative bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-6 mb-6 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background rounded-2xl p-6 md:p-8 mb-6 overflow-hidden border border-primary/20">
         <div className="absolute inset-0">
           <img 
             src={dashboardHeroImage} 
             alt="Dashboard overview"
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-background/90 to-background/70"></div>
         </div>
         <div className="relative z-10">
-          <h1 className="text-2xl font-bold mb-2">Your Dashboard</h1>
-          <p className="text-muted-foreground">Monitor your connectivity and power status in real-time</p>
+          <h1 className="text-xl md:text-2xl font-bold mb-2">Your dePIN Dashboard</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Decentralized connectivity powered by blockchain technology</p>
         </div>
       </div>
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card>
+        <Card className="border-primary/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Internet Status</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Wifi className="w-4 h-4" />
+              Internet Status
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${activeVouchers.internet ? 'bg-green-100' : 'bg-silver-100'}`}>
-                  <Wifi size={20} className={activeVouchers.internet ? 'text-green-600' : 'text-silver-600'} />
+                <div className={`p-3 rounded-lg ${activeVouchers.internet ? 'bg-primary/20 text-primary' : 'bg-muted'}`}>
+                  <Wifi size={24} />
                 </div>
                 <div>
-                  <div className={`font-medium ${activeVouchers.internet ? 'text-green-600' : 'text-silver-600'}`}>
+                  <div className={`font-semibold ${activeVouchers.internet ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {activeVouchers.internet ? 'Connected' : 'Not Connected'}
                   </div>
-                  <div className="text-sm text-silver-600">
-                    {activeVouchers.internet ? 'You have active internet access' : 'Purchase a plan to get connected'}
+                  <div className="text-xs md:text-sm text-muted-foreground">
+                    {activeVouchers.internet ? 'Active connection' : 'Purchase a plan'}
                   </div>
                 </div>
               </div>
               <Button 
+                size="sm" 
                 variant={activeVouchers.internet ? "outline" : "default"}
                 onClick={() => navigate('/plans')}
-                size="sm"
               >
-                {activeVouchers.internet ? 'View Plans' : 'Get Connected'}
+                {activeVouchers.internet ? 'Manage' : 'Buy Plan'}
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-primary/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Power Status</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              Power Status
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${activeVouchers.power ? 'bg-green-100' : 'bg-silver-100'}`}>
-                  <Zap size={20} className={activeVouchers.power ? 'text-green-600' : 'text-silver-600'} />
+                <div className={`p-3 rounded-lg ${activeVouchers.power ? 'bg-primary/20 text-primary' : 'bg-muted'}`}>
+                  <Zap size={24} />
                 </div>
                 <div>
-                  <div className={`font-medium ${activeVouchers.power ? 'text-green-600' : 'text-silver-600'}`}>
+                  <div className={`font-semibold ${activeVouchers.power ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {activeVouchers.power ? 'Active' : 'Inactive'}
                   </div>
-                  <div className="text-sm text-silver-600">
-                    {activeVouchers.power ? 'You have active power access' : 'Purchase a plan to activate power'}
+                  <div className="text-xs md:text-sm text-muted-foreground">
+                    {activeVouchers.power ? 'Power access active' : 'Purchase a plan'}
                   </div>
                 </div>
               </div>
               <Button 
+                size="sm"
                 variant={activeVouchers.power ? "outline" : "default"}
                 onClick={() => navigate('/plans')}
-                size="sm"
               >
-                {activeVouchers.power ? 'View Plans' : 'Get Power'}
+                {activeVouchers.power ? 'Manage' : 'Buy Plan'}
               </Button>
             </div>
           </CardContent>
@@ -145,9 +151,9 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Vouchers */}
-      <div className="mb-8">
+      <div className="mb-6 md:mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Recent Vouchers</h2>
+          <h2 className="text-lg md:text-xl font-semibold">Recent Vouchers</h2>
           <Button variant="outline" size="sm" onClick={() => navigate('/vouchers')}>
             View All
           </Button>
@@ -166,10 +172,10 @@ const Dashboard = () => {
             ))}
           </div>
         ) : (
-          <Card className="bg-silver-50 border-dashed">
+          <Card className="border-dashed border-primary/20">
             <CardContent className="py-8 text-center">
-              <CreditCard className="mx-auto text-silver-400 mb-2" size={32} />
-              <p className="text-silver-600">You don't have any vouchers yet</p>
+              <CreditCard className="mx-auto text-muted-foreground mb-2" size={32} />
+              <p className="text-muted-foreground text-sm md:text-base">You don't have any vouchers yet</p>
               <Button variant="link" onClick={() => navigate('/plans')}>
                 Purchase your first plan
               </Button>
@@ -181,7 +187,7 @@ const Dashboard = () => {
       {/* Nearby Hotspots */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Nearby Hotspots</h2>
+          <h2 className="text-lg md:text-xl font-semibold">Nearby dePIN Nodes</h2>
           <Button variant="outline" size="sm" onClick={() => navigate('/hotspots')}>
             View All
           </Button>
@@ -189,16 +195,16 @@ const Dashboard = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {nearbyHotspots.map(hotspot => (
-            <Card key={hotspot.id}>
+            <Card key={hotspot.id} className="border-primary/10">
               <CardContent className="pt-6">
                 <h3 className="font-semibold mb-2">{hotspot.name}</h3>
-                <p className="text-sm text-silver-600 mb-4">{hotspot.location}</p>
-                <div className="flex space-x-2">
+                <p className="text-xs md:text-sm text-muted-foreground mb-4">{hotspot.location}</p>
+                <div className="flex flex-wrap gap-2">
                   {hotspot.services.includes('internet') && (
-                    <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">Internet</div>
+                    <div className="bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-medium">Internet</div>
                   )}
                   {hotspot.services.includes('power') && (
-                    <div className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">Power</div>
+                    <div className="bg-accent/80 text-accent-foreground px-2 py-1 rounded-full text-xs font-medium">Power</div>
                   )}
                 </div>
               </CardContent>

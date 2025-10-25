@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { PlanProvider } from "./contexts/PlanContext";
 import { TonProvider } from "./contexts/TonContext";
+import { HederaProvider } from "./contexts/HederaContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -30,15 +31,16 @@ import AdminRoute from "./components/AdminRoute";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TonProvider>
-      <AuthProvider>
-        <PlanProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
+    <QueryClientProvider client={queryClient}>
+      <TonProvider>
+        <HederaProvider>
+          <AuthProvider>
+            <PlanProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 
@@ -59,11 +61,12 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-          </TooltipProvider>
-        </PlanProvider>
-      </AuthProvider>
-    </TonProvider>
-  </QueryClientProvider>
+              </TooltipProvider>
+            </PlanProvider>
+          </AuthProvider>
+        </HederaProvider>
+      </TonProvider>
+    </QueryClientProvider>
 );
 
 export default App;

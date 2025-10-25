@@ -20,30 +20,30 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header with prominent Silver Umbrella Ventures branding */}
-      <header className="relative z-50 bg-background/95 backdrop-blur-sm border-b border-border/10">
-        <div className="container mx-auto px-4 md:px-6 py-4">
+      <header className="relative z-50 bg-card/95 backdrop-blur-xl border-b border-primary/20">
+        <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <img 
                 src={silverUmbrellaLogo} 
                 alt="Silver Umbrella Ventures"
-                className="h-12 w-auto"
+                className="h-8 md:h-12 w-auto"
               />
               <div>
-                <h1 className="font-bold text-xl text-foreground">Silver Umbrella Ventures</h1>
-                <p className="text-sm text-muted-foreground">Powering Rural Nigeria's Future</p>
+                <h1 className="font-bold text-base md:text-xl text-foreground">Silver Umbrella Ventures</h1>
+                <p className="text-xs md:text-sm text-muted-foreground">Decentralized Physical Infrastructure Network</p>
               </div>
             </div>
             
             {user ? (
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
-                  Dashboard
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
+                <span className="hidden sm:inline">Dashboard</span>
+                <span className="sm:hidden">App</span>
+              </Button>
             ) : (
-              <Button onClick={() => navigate('/login')}>
-                Get Started
+              <Button onClick={() => navigate('/login')} size="sm">
+                <span className="hidden sm:inline">Get Started</span>
+                <span className="sm:hidden">Join</span>
               </Button>
             )}
           </div>
@@ -56,79 +56,80 @@ const Index = () => {
         <div className="absolute inset-0">
           <img 
             src={heroImage} 
-            alt="Rural connectivity infrastructure"
-            className="w-full h-full object-cover opacity-70"
+            alt="Decentralized rural connectivity infrastructure"
+            className="w-full h-full object-cover opacity-60"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/70 to-background/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/40"></div>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 md:py-24">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 md:py-20">
+          <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12">
             {/* Left content */}
             <div className="lg:w-1/2 text-center lg:text-left">
-              <Badge className="mb-6">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Now Live in Ijero-Ekiti!
+              <Badge className="mb-4 md:mb-6">
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                <span className="text-xs md:text-sm">Powered by Hedera dePIN</span>
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground leading-tight">
-                Power Your
-                <span className="text-primary"> Future</span>
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 text-foreground leading-tight">
+                <span className="block">Decentralized</span>
+                <span className="text-primary block">Connectivity</span>
+                <span className="block">Network</span>
               </h1>
               
-              <p className="text-xl md:text-2xl mb-8 text-muted-foreground leading-relaxed">
-                Decentralized internet & solar power for rural Nigeria.
-                <span className="text-primary font-semibold"> Earn rewards</span> by inviting friends!
+              <p className="text-base md:text-xl lg:text-2xl mb-6 md:mb-8 text-muted-foreground leading-relaxed">
+                Own & earn from physical infrastructure.
+                <span className="text-primary font-semibold block mt-2">Blockchain-powered rewards</span> for every connection!
               </p>
 
-              {/* Reward System Spotlight */}
-              <Card className="bg-card border mb-8">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+              {/* Web3 Reward System Spotlight */}
+              <Card className="bg-card/95 backdrop-blur-sm border-primary/30 mb-6 md:mb-8">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center justify-center lg:justify-start gap-2 md:gap-3 mb-3 md:mb-4">
                     <div className="bg-primary p-2 rounded-full">
-                      <Gift className="w-6 h-6 text-primary-foreground" />
+                      <Gift className="w-4 h-4 md:w-6 md:h-6 text-primary-foreground" />
                     </div>
-                    <h3 className="text-xl font-bold text-card-foreground">Earn While You Share!</h3>
+                    <h3 className="text-base md:text-xl font-bold text-card-foreground">Web3 Rewards Program</h3>
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    Get <span className="font-bold text-primary">50 points</span> for every friend you invite. 
-                    Redeem points for free data and power!
+                  <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4">
+                    Earn <span className="font-bold text-primary">HBAR tokens</span> by sharing infrastructure. 
+                    Redeem on-chain for data, power & more!
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" className="text-xs">
                       <Trophy className="w-3 h-3 mr-1" />
-                      Free Internet
+                      Free Data
                     </Badge>
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" className="text-xs">
                       <Zap className="w-3 h-3 mr-1" />
-                      Free Power
+                      Solar Power
                     </Badge>
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" className="text-xs">
                       <Users className="w-3 h-3 mr-1" />
-                      Growing Community
+                      dePIN Network
                     </Badge>
                   </div>
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                 {user ? (
                   <>
-                    <Button size="lg" onClick={() => navigate('/dashboard')}>
-                      <Zap className="mr-2 h-5 w-5" />
-                      Go to Dashboard
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                    <Button size="default" className="md:size-lg" onClick={() => navigate('/dashboard')}>
+                      <Zap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-sm md:text-base">Dashboard</span>
+                      <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                     </Button>
-                    <Button variant="outline" size="lg" onClick={() => navigate('/rewards')}>
-                      <Gift className="mr-2 h-5 w-5" />
-                      Earn Rewards
+                    <Button variant="outline" size="default" className="md:size-lg" onClick={() => navigate('/rewards')}>
+                      <Gift className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-sm md:text-base">Earn Rewards</span>
                     </Button>
                   </>
                 ) : (
-                  <Button size="lg" onClick={() => navigate('/login')}>
-                    <Star className="mr-2 h-5 w-5" />
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                  <Button size="default" className="md:size-lg w-full sm:w-auto" onClick={() => navigate('/login')}>
+                    <Star className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                    <span className="text-sm md:text-base">Join dePIN Network</span>
+                    <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 )}
               </div>

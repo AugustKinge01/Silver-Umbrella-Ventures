@@ -5,6 +5,44 @@
 
 @layer base {
   :root {
+    --background: 240 10% 5%;
+    --foreground: 210 20% 98%;
+
+    --card: 240 8% 8%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 240 8% 8%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 280 85% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 240 6% 15%;
+    --muted-foreground: 215 16% 65%;
+
+    --accent: 280 85% 25%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 18%;
+    --input: 240 6% 18%;
+    --ring: 280 85% 65%;
+
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(280 85% 65%), hsl(260 90% 75%));
+    --gradient-card: linear-gradient(180deg, hsl(240 8% 10%), hsl(240 8% 8%));
+
+    --radius: 0.75rem;
+  }
+
+  .light {
     --background: 260 25% 98%;
     --foreground: 240 10% 4%;
 
@@ -14,7 +52,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 4%;
 
-    --primary: 260 70% 60%;
+    --primary: 280 85% 65%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 5% 96%;
@@ -23,7 +61,7 @@
     --muted: 240 5% 96%;
     --muted-foreground: 240 4% 46%;
 
-    --accent: 260 70% 95%;
+    --accent: 280 85% 95%;
     --accent-foreground: 240 6% 10%;
 
     --destructive: 0 84% 60%;
@@ -31,39 +69,10 @@
 
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 260 70% 60%;
+    --ring: 280 85% 65%;
 
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 260 70% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-
-    --accent: 240 4% 16%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 260 70% 60%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
   }
 }
 
@@ -75,6 +84,17 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Mobile-first optimizations */
+  @media (max-width: 768px) {
+    body {
+      padding-bottom: 4rem;
+    }
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
