@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wifi, Zap, CreditCard } from "lucide-react";
+import { Wifi, Zap, CreditCard, Brain } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePlans } from "@/contexts/PlanContext";
 import VoucherCard from "@/components/VoucherCard";
+import AIInsights from "@/components/AIInsights";
+import MaintenancePredictor from "@/components/MaintenancePredictor";
+import { supabase } from "@/integrations/supabase/client";
 import dashboardHeroImage from "@/assets/dashboard-hero.jpg";
 
 const Dashboard = () => {
@@ -18,6 +21,11 @@ const Dashboard = () => {
     internet: false,
     power: false
   });
+  
+  // AI Insights State
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [maintenancePrediction, setMaintenancePrediction] = useState<any>(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
   
   // Check if user has active vouchers
   useEffect(() => {
@@ -56,6 +64,50 @@ const Dashboard = () => {
     .filter(h => h.status === 'active')
     .slice(0, 3);
 
+  // Load AI Insights
+  useEffect(() => {
+    const loadAIInsights = async () => {
+      setLoadingInsights(true);
+      try {
+        // Get AI predictions for network performance
+        const nodeData = {
+          activeNodes: hotspots.filter(h => h.status === 'active').length,
+          totalNodes: hotspots.length,
+          averageSignalStrength: hotspots.reduce((acc, h) => acc + (h.signalStrength?.level || 0), 0) / hotspots.length,
+          activeUsers: hotspots.reduce((acc, h) => acc + (h.capacity?.currentUsers || 0), 0),
+        };
+
+        const { data: performanceData, error: perfError } = await supabase.functions.invoke('predict-node-performance', {
+          body: { nodeData }
+        });
+
+        if (!perfError && performanceData) {
+          setAiInsights(performanceData);
+        }
+
+        // Get maintenance predictions for first active hotspot with equipment health
+        const hotspotWithHealth = hotspots.find(h => h.equipmentHealth && h.status === 'active');
+        if (hotspotWithHealth?.equipmentHealth) {
+          const { data: maintenanceData, error: maintError } = await supabase.functions.invoke('predict-maintenance', {
+            body: { equipmentData: hotspotWithHealth.equipmentHealth }
+          });
+
+          if (!maintError && maintenanceData) {
+            setMaintenancePrediction(maintenanceData);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading AI insights:', error);
+      } finally {
+        setLoadingInsights(false);
+      }
+    };
+
+    if (hotspots.length > 0) {
+      loadAIInsights();
+    }
+  }, [hotspots]);
+
   const handleActivateVoucher = async (voucherId: string) => {
     await activateVoucher(voucherId);
   };
@@ -78,6 +130,30 @@ const Dashboard = () => {
         <div className="relative z-10">
           <h1 className="text-xl md:text-2xl font-bold mb-2">Your dePIN Dashboard</h1>
           <p className="text-sm md:text-base text-muted-foreground">Decentralized connectivity powered by blockchain technology</p>
+        </div>
+      </div>
+
+      {/* AI Insights Section */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Brain className="h-6 w-6 text-primary" />
+          <h2 className="text-xl md:text-2xl font-bold">AI-Powered Network Intelligence</h2>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AIInsights 
+            performanceScore={aiInsights?.performanceScore}
+            predictedUptime={aiInsights?.predictedUptime}
+            riskFactors={aiInsights?.riskFactors}
+            recommendations={aiInsights?.recommendations}
+            loading={loadingInsights && !aiInsights}
+          />
+          <MaintenancePredictor
+            overallHealth={maintenancePrediction?.overallHealth}
+            maintenancePriority={maintenancePrediction?.maintenancePriority}
+            predictedIssues={maintenancePrediction?.predictedIssues}
+            solarForecast={maintenancePrediction?.solarForecast}
+            loading={loadingInsights && !maintenancePrediction}
+          />
         </div>
       </div>
 

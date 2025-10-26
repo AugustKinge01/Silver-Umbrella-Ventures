@@ -1,0 +1,10 @@
+project_id = "vrrupflvbdfpywdhbqzt"
+
+[functions.predict-node-performance]
+verify_jwt = false
+
+[functions.optimize-bandwidth]
+verify_jwt = false
+
+[functions.predict-maintenance]
+verify_jwt = false
