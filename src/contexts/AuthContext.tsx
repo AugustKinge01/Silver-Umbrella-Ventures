@@ -1,12 +1,14 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Define types
 type User = {
   id: string;
-  phone: string;
-  isAdmin: boolean;
+  email: string;
+  phone?: string;
+  roles: string[];
   walletAddress?: string;
   name?: string;
 };
@@ -14,10 +16,11 @@ type User = {
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
-  sendOTP: (phone: string) => Promise<boolean>;
-  verifyOTP: (phone: string, otp: string) => Promise<boolean>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<boolean>;
+  signIn: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   connectWallet: (address: string) => Promise<boolean>;
+  checkIsAdmin: () => boolean;
 };
 
 // Create the context
@@ -28,14 +31,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch user roles
+  const fetchUserRoles = async (userId: string): Promise<string[]> => {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error('Error fetching roles:', error);
+      return ['user'];
+    }
+    
+    return data?.map(r => r.role) || ['user'];
+  };
+
   // Check for existing session on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
-        // For now, simulate checking local storage
-        const savedUser = localStorage.getItem('silverUmbrella.user');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const roles = await fetchUserRoles(session.user.id);
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            phone: session.user.phone,
+            roles,
+            name: session.user.user_metadata?.full_name
+          });
         }
       } catch (error) {
         console.error('Error checking session:', error);
@@ -45,24 +69,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const roles = await fetchUserRoles(session.user.id);
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          phone: session.user.phone,
+          roles,
+          name: session.user.user_metadata?.full_name
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Mock sending OTP
-  const sendOTP = async (phone: string): Promise<boolean> => {
+  // Sign up function
+  const signUp = async (email: string, password: string, fullName?: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // In a real app, this would call Supabase Auth API
-      // For MVP, we'll simulate a successful OTP send
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "OTP Sent",
-        description: `Check your phone ${phone} for verification code.`,
+        title: "Account Created",
+        description: "Welcome to Silver Umbrella!",
       });
       return true;
-    } catch (error) {
-      console.error('Error sending OTP:', error);
+    } catch (error: any) {
+      console.error('Error signing up:', error);
       toast({
-        title: "Failed to send OTP",
-        description: "Please try again later.",
+        title: "Sign Up Failed",
+        description: error.message || "Please try again.",
         variant: "destructive",
       });
       return false;
@@ -71,42 +123,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Mock verifying OTP
-  const verifyOTP = async (phone: string, otp: string): Promise<boolean> => {
+  // Sign in function
+  const signIn = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // In a real app, this would verify with Supabase Auth
-      // For MVP, we'll accept any 6-digit code
-      if (otp.length === 6 && /^\d+$/.test(otp)) {
-        // Mock user data
-        const mockUser: User = {
-          id: `user_${Date.now()}`,
-          phone,
-          isAdmin: phone === "+2347000000000", // Admin check
-          name: ""
-        };
-        
-        setUser(mockUser);
-        localStorage.setItem('silverUmbrella.user', JSON.stringify(mockUser));
-        
-        toast({
-          title: "Login Successful",
-          description: "Welcome to Silver Umbrella!",
-        });
-        return true;
-      }
-      
-      toast({
-        title: "Invalid OTP",
-        description: "Please enter the correct 6-digit code.",
-        variant: "destructive",
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
-      return false;
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
+
+      if (error) throw error;
+
       toast({
-        title: "Verification Failed",
-        description: "Please try again.",
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      return true;
+    } catch (error: any) {
+      console.error('Error signing in:', error);
+      toast({
+        title: "Login Failed",
+        description: error.message || "Please try again.",
         variant: "destructive",
       });
       return false;
@@ -116,9 +153,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
   
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('silverUmbrella.user');
     toast({
       title: "Logged Out",
       description: "You've been successfully logged out.",
@@ -136,7 +173,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       
       setUser(updatedUser);
-      localStorage.setItem('silverUmbrella.user', JSON.stringify(updatedUser));
       
       toast({
         title: "Wallet Connected",
@@ -154,14 +190,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const checkIsAdmin = () => {
+    return user?.roles.includes('admin') || false;
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       isLoading, 
-      sendOTP, 
-      verifyOTP, 
+      signUp, 
+      signIn, 
       logout,
       connectWallet,
+      checkIsAdmin,
     }}>
       {children}
     </AuthContext.Provider>

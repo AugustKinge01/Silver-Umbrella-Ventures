@@ -8,7 +8,7 @@ type AdminRouteProps = {
 };
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, checkIsAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -18,7 +18,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     );
   }
 
-  if (!user || !user.isAdmin) {
+  if (!user || !checkIsAdmin()) {
     return <Navigate to="/dashboard" replace />;
   }
 

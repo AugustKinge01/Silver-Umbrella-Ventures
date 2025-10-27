@@ -22,6 +22,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPlans from "./pages/admin/AdminPlans";
 import AdminVouchers from "./pages/admin/AdminVouchers";
 import AdminRewards from "./pages/admin/AdminRewards";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminPayments from "./pages/admin/AdminPayments";
+import AdminSupport from "./pages/admin/AdminSupport";
 import NotFound from "./pages/NotFound";
 
 // Component for protected routes
@@ -54,6 +57,9 @@ const App = () => (
                 
                 {/* Protected Admin Routes */}
                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+                <Route path="/admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
+                <Route path="/admin/support" element={<AdminRoute><AdminSupport /></AdminRoute>} />
                 <Route path="/admin/plans" element={<AdminRoute><AdminPlans /></AdminRoute>} />
                 <Route path="/admin/vouchers" element={<AdminRoute><AdminVouchers /></AdminRoute>} />
                 <Route path="/admin/rewards" element={<AdminRoute><AdminRewards /></AdminRoute>} />
