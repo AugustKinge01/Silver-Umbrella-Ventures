@@ -16,13 +16,13 @@ type LayoutProps = {
 };
 
 const Layout = ({ children, title, description }: LayoutProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout, checkIsAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   // Navigation items, different for user and admin
-  const navItems = user?.isAdmin
+  const navItems = checkIsAdmin()
     ? [
         { name: "Dashboard", href: "/admin", icon: <Wifi size={20} /> },
         { name: "Plans", href: "/admin/plans", icon: <Calendar size={20} /> },
@@ -45,7 +45,7 @@ const Layout = ({ children, title, description }: LayoutProps) => {
       <header className="sticky top-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
         <div className="container flex h-14 md:h-16 items-center justify-between px-4">
           <div 
-            onClick={() => navigate(user?.isAdmin ? '/admin' : '/dashboard')}
+            onClick={() => navigate(checkIsAdmin() ? '/admin' : '/dashboard')}
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
           >
             <img src={silverUmbrellaLogo} alt="Silver Umbrella" className="h-7 w-7 md:h-8 md:w-8" />

@@ -41,10 +41,10 @@ type SupportTicket = {
   admin_notes: string | null;
   created_at: string;
   updated_at: string;
-  profiles?: {
+  profiles: {
     email: string;
-    full_name: string | null;
-  };
+    full_name: string;
+  } | null;
 };
 
 const AdminSupport = () => {
@@ -73,7 +73,7 @@ const AdminSupport = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTickets(data || []);
+      setTickets((data as any) || []);
     } catch (error: any) {
       toast({
         title: "Error",

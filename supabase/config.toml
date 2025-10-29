@@ -8,3 +8,12 @@ verify_jwt = false
 
 [functions.predict-maintenance]
 verify_jwt = false
+
+[functions.hedera-create-token]
+verify_jwt = true
+
+[functions.hedera-transfer-token]
+verify_jwt = true
+
+[functions.hedera-get-balance]
+verify_jwt = true

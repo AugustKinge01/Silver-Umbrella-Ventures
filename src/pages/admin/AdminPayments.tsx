@@ -33,10 +33,10 @@ type Payment = {
   transaction_hash: string | null;
   description: string | null;
   created_at: string;
-  profiles?: {
+  profiles: {
     email: string;
-    full_name: string | null;
-  };
+    full_name: string;
+  } | null;
 };
 
 const AdminPayments = () => {
@@ -63,7 +63,7 @@ const AdminPayments = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayments(data || []);
+      setPayments((data as any) || []);
     } catch (error: any) {
       toast({
         title: "Error",
