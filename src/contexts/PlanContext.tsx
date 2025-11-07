@@ -116,7 +116,7 @@ type PlanContextType = {
   pointsRedemptions: PointsRedemption[];
   userPoints: number;
   isLoading: boolean;
-  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'ton') => Promise<Voucher | null>;
+  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar') => Promise<Voucher | null>;
   activateVoucher: (voucherId: string) => Promise<boolean>;
   updateSignalStrengths: () => void;
   submitSupportTicket: (ticket: Omit<SupportTicket, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
@@ -481,7 +481,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'ton'): Promise<Voucher | null> => {
+  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
       // Find the selected plan
@@ -510,7 +510,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       // Add voucher to state
       setVouchers(prev => [...prev, voucher]);
 
-      const paymentMethodText = paymentMethod === 'ton' ? 'TON wallet' : paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
+      const paymentMethodText = paymentMethod === 'stellar' ? 'Stellar wallet' : paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
       
       toast({
         title: "Purchase Successful",
