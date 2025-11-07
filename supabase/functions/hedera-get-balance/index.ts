@@ -63,9 +63,11 @@ serve(async (req) => {
     
     // Extract token balances (INET, NRGY, etc.)
     const tokenBalances: Record<string, string> = {};
-    balance.tokens?.forEach((amount, tokenId) => {
-      tokenBalances[tokenId.toString()] = amount.toString();
-    });
+    if (balance.tokens) {
+      for (const [tokenId, amount] of balance.tokens.entries()) {
+        tokenBalances[tokenId.toString()] = amount.toString();
+      }
+    }
 
     console.log('Balance retrieved:', { hbarBalance, tokenBalances });
 
