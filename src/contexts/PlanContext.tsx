@@ -481,7 +481,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar'): Promise<Voucher | null> => {
+  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar' = 'stellar'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
       // Find the selected plan

@@ -69,25 +69,45 @@ Stellar Testnet → Horizon API → Mirror Nodes
 
 ## 🛠️ Setup & Deployment
 
-### Build Contracts
+### Prerequisites
 ```bash
-cd contracts/payment && stellar contract build
-cd contracts/inet-token && stellar contract build
-cd contracts/voucher && stellar contract build
+# Install Rust and Stellar CLI
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup target add wasm32-unknown-unknown
+cargo install --locked stellar-cli --features opt
+
+# Configure testnet
+stellar network add --global testnet \
+  --rpc-url https://soroban-testnet.stellar.org:443 \
+  --network-passphrase "Test SDF Network ; September 2015"
+
+# Create and fund admin account
+stellar keys generate --global admin --network testnet
+curl "https://friendbot.stellar.org?addr=$(stellar keys address admin)"
 ```
 
-### Deploy to Testnet
+### Quick Deploy (Automated)
 ```bash
-stellar contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/payment_contract.wasm \
-  --source ADMIN_KEY --network testnet
+# Make script executable and run
+chmod +x scripts/deploy-contracts.sh
+./scripts/deploy-contracts.sh
 ```
+
+This automatically:
+- Builds all contracts
+- Deploys to Stellar testnet
+- Initializes contracts
+- Generates TypeScript bindings
+- Creates `.env.local` with contract addresses
 
 ### Run Frontend
 ```bash
 npm install
 npm run dev  # Runs on localhost:5173
 ```
+
+### Manual Deployment
+See detailed instructions in [`contracts/README.md`](./contracts/README.md)
 
 ---
 
