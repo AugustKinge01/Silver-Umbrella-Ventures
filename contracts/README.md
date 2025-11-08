@@ -1,6 +1,8 @@
-# Silver Umbrella Ventures - Stellar Smart Contracts
+# Silver Umbrella Ventures - Scaffold Stellar Smart Contracts
 
-This directory contains the Soroban smart contracts for the SUV platform.
+This directory contains the Soroban smart contracts deployed using **Scaffold Stellar** for the SUV platform.
+
+> 🏆 **Hackathon Compliant:** All contracts use the Scaffold Stellar CLI and registry system
 
 ## Contracts
 
@@ -20,6 +22,9 @@ rustup target add wasm32-unknown-unknown
 # Install Stellar CLI
 cargo install --locked stellar-cli --features opt
 
+# Install Scaffold Stellar CLI (REQUIRED)
+cargo install --locked stellar-scaffold-cli
+
 # Configure testnet
 stellar network add \
   --global testnet \
@@ -36,7 +41,7 @@ cd ../payment && stellar contract build
 cd ../voucher && stellar contract build
 ```
 
-## Deploy to Testnet
+## Deploy to Testnet with Scaffold Stellar
 
 ### 1. Create Test Identity
 ```bash
@@ -47,29 +52,63 @@ stellar keys address admin
 curl "https://friendbot.stellar.org?addr=$(stellar keys address admin)"
 ```
 
-### 2. Deploy Contracts
+### 2. Publish & Deploy Contracts Using Scaffold Stellar
+
+#### Method A: Automated Deployment Script (Recommended)
+```bash
+# Run the automated deployment script
+cd ../..
+chmod +x scripts/deploy-contracts.sh
+./scripts/deploy-contracts.sh
+```
+
+#### Method B: Manual Deployment with Scaffold Stellar
 
 ```bash
-# Deploy INET Token
+# Publish INET Token to Stellar Registry
 cd inet-token
-INET_ID=$(stellar contract deploy \
+stellar registry publish \
   --wasm target/wasm32-unknown-unknown/release/inet_token.wasm \
+  --wasm-name suv-inet-token \
+  --source admin \
+  --network testnet
+
+# Deploy INET Token instance
+INET_ID=$(stellar registry deploy \
+  --contract-name inet-token-instance \
+  --wasm-name suv-inet-token \
   --source admin \
   --network testnet)
 echo "INET Token ID: $INET_ID"
 
-# Deploy Payment Contract
+# Publish Payment Contract to Registry
 cd ../payment
-PAYMENT_ID=$(stellar contract deploy \
+stellar registry publish \
   --wasm target/wasm32-unknown-unknown/release/payment_contract.wasm \
+  --wasm-name suv-payment-contract \
+  --source admin \
+  --network testnet
+
+# Deploy Payment Contract instance
+PAYMENT_ID=$(stellar registry deploy \
+  --contract-name payment-instance \
+  --wasm-name suv-payment-contract \
   --source admin \
   --network testnet)
 echo "Payment Contract ID: $PAYMENT_ID"
 
-# Deploy Voucher Contract
+# Publish Voucher Contract to Registry
 cd ../voucher
-VOUCHER_ID=$(stellar contract deploy \
+stellar registry publish \
   --wasm target/wasm32-unknown-unknown/release/voucher_contract.wasm \
+  --wasm-name suv-voucher-contract \
+  --source admin \
+  --network testnet
+
+# Deploy Voucher Contract instance
+VOUCHER_ID=$(stellar registry deploy \
+  --contract-name voucher-instance \
+  --wasm-name suv-voucher-contract \
   --source admin \
   --network testnet)
 echo "Voucher Contract ID: $VOUCHER_ID"
@@ -120,9 +159,14 @@ VITE_STELLAR_VOUCHER_CONTRACT_ID=$VOUCHER_ID
 VITE_STELLAR_ADMIN_ADDRESS=$(stellar keys address admin)
 ```
 
-## Generate TypeScript Bindings
+## Generate TypeScript Bindings with Scaffold Stellar
 
 ```bash
+# Install deployed contracts locally
+stellar registry install inet-token-instance
+stellar registry install payment-instance
+stellar registry install voucher-instance
+
 # Generate TypeScript clients for frontend
 stellar contract bindings typescript \
   --network testnet \
@@ -192,8 +236,25 @@ stellar contract invoke \
   --duration_hours 720
 ```
 
+## Scaffold Stellar Development Workflow
+
+```bash
+# Start watch mode (auto-rebuild on changes)
+stellar scaffold watch --build-clients
+
+# View published contracts in registry
+stellar registry list
+
+# Install a contract from registry
+stellar registry install contract-name
+
+# Upgrade a deployed contract
+stellar registry deploy --contract-name instance-name --wasm-name new-wasm-name
+```
+
 ## Resources
 
+- [Scaffold Stellar Documentation](https://scaffoldstellar.org)
+- [Scaffold Stellar GitHub](https://github.com/AhaLabs/scaffold-stellar)
 - [Soroban Documentation](https://soroban.stellar.org/docs)
 - [Stellar CLI Reference](https://developers.stellar.org/docs/tools/stellar-cli)
-- [Scaffold Stellar](https://scaffoldstellar.org)

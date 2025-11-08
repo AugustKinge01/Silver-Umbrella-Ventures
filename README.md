@@ -1,8 +1,10 @@
-# Silver Umbrella Ventures (SUV) - Stellar Edition
+# Silver Umbrella Ventures (SUV) - Scaffold Stellar Edition
 
-## Scaffold Stellar Open Innovation Hackathon
+## 🏆 Scaffold Stellar Open Innovation Hackathon
 **Track:** DePIN & IoT  
-**Built with:** Scaffold Stellar Framework
+**Built with:** [Scaffold Stellar Framework](https://scaffoldstellar.org)
+
+> ✅ **Hackathon Compliant:** This project uses the official Scaffold Stellar CLI for smart contract deployment and management
 
 ---
 
@@ -16,7 +18,7 @@ SUV enables communities to deploy solar WiFi hotspots, earn INET/NRGY tokens, an
 
 ---
 
-## 🚀 Stellar Integration (Meets All Hackathon Requirements)
+## 🚀 Scaffold Stellar Integration (Meets All Hackathon Requirements)
 
 ### ✅ 1. Deployed Smart Contracts (Rust → Wasm)
 
@@ -67,47 +69,70 @@ Stellar Testnet → Horizon API → Mirror Nodes
 
 ---
 
-## 🛠️ Setup & Deployment
+## 🛠️ Setup & Deployment (Scaffold Stellar)
 
 ### Prerequisites
 ```bash
-# Install Rust and Stellar CLI
+# 1. Install Rust and Cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add wasm32-unknown-unknown
+
+# 2. Install Stellar CLI
 cargo install --locked stellar-cli --features opt
 
-# Configure testnet
+# 3. Install Scaffold Stellar CLI (REQUIRED for hackathon)
+cargo install --locked stellar-scaffold-cli
+
+# 4. Install Node.js dependencies
+npm install
+
+# 5. Configure Stellar testnet
 stellar network add --global testnet \
   --rpc-url https://soroban-testnet.stellar.org:443 \
   --network-passphrase "Test SDF Network ; September 2015"
 
-# Create and fund admin account
+# 6. Create and fund admin account
 stellar keys generate --global admin --network testnet
 curl "https://friendbot.stellar.org?addr=$(stellar keys address admin)"
 ```
 
-### Quick Deploy (Automated)
+### Quick Start with Scaffold Stellar
+
+#### Option A: Deploy Contracts (Automated)
 ```bash
-# Make script executable and run
+# Deploy using Scaffold Stellar registry
 chmod +x scripts/deploy-contracts.sh
 ./scripts/deploy-contracts.sh
 ```
 
 This automatically:
-- Builds all contracts
-- Deploys to Stellar testnet
-- Initializes contracts
+- Builds all contracts using Scaffold Stellar
+- Publishes to Stellar registry with `stellar registry publish`
+- Deploys contract instances with `stellar registry deploy`
 - Generates TypeScript bindings
 - Creates `.env.local` with contract addresses
 
-### Run Frontend
+#### Option B: Development Mode with Watch
 ```bash
-npm install
+# Start Scaffold Stellar watch mode (auto-rebuild on changes)
+stellar scaffold watch --build-clients
+
+# In another terminal, run the frontend
 npm run dev  # Runs on localhost:5173
 ```
 
-### Manual Deployment
+### Manual Deployment with Scaffold Stellar
 See detailed instructions in [`contracts/README.md`](./contracts/README.md)
+
+### Verify Scaffold Stellar Installation
+```bash
+# Check if Scaffold Stellar CLI is installed
+stellar scaffold --version
+
+# View available Scaffold Stellar commands
+stellar scaffold --help
+stellar registry --help
+```
 
 ---
 

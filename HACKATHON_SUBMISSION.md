@@ -1,203 +1,237 @@
-# 🚀 Hedera Africa Hackathon 2025 - Final Submission Checklist
+# Silver Umbrella Ventures - Scaffold Stellar Hackathon Submission
 
-## Project: Silver Umbrella Ventures (SUV)
+## 🏆 Scaffold Stellar Open Innovation Hackathon
+
+**Project:** Silver Umbrella Ventures (SUV)  
 **Track:** DePIN & IoT  
-**Submission Deadline:** October 31, 2025, 23:59 CET
+**Team:** Victor Olumese
 
 ---
 
-## ✅ Mandatory Components Status
+## ✅ Hackathon Requirements Checklist
 
-### 1. DoraHacks BUIDL Profile
-- [ ] All team members registered (max 7)
-- [ ] Roles and contribution percentages listed
-- [ ] Problem statement added
-- [ ] Hedera services explicitly listed (HTS)
-- [ ] Track selection: DePIN & IoT
+### 1. Built with Scaffold Stellar Framework ✓
 
-**DoraHacks Link:** [Add your BUIDL page URL here]
+- **Scaffold Stellar CLI installed and used:**
+  ```bash
+  cargo install --locked stellar-scaffold-cli
+  stellar scaffold --version
+  ```
 
----
+- **Deployment uses Scaffold Stellar registry:**
+  - All contracts published with `stellar registry publish`
+  - All instances deployed with `stellar registry deploy`
+  - See: `scripts/deploy-contracts.sh`
 
-### 2. GitHub Repository
-- [x] **Public visibility:** Yes
-- [x] **README.md:** Complete with all required sections
-- [x] **Setup instructions:** 10-minute deployment guide included
-- [x] **Architecture diagram:** ASCII diagram in README.md
-- [x] **.env.example:** Template provided
-- [x] **Code quality:** TypeScript, ESLint, commented
-- [x] **Hedera integration summary:** Detailed HTS implementation
-- [ ] **Collaborator added:** Invite `Hackathon@hashgraph-association.com`
+- **Registry Commands Used:**
+  ```bash
+  # Publish WASM to registry
+  stellar registry publish --wasm contract.wasm --wasm-name suv-inet-token
+  
+  # Deploy contract instance
+  stellar registry deploy --contract-name inet-token-instance --wasm-name suv-inet-token
+  
+  # Install for local development
+  stellar registry install inet-token-instance
+  ```
 
-**Repository Link:** https://github.com/yourusername/silver-umbrella-ventures
+### 2. Deployed Smart Contracts (Rust → Wasm) ✓
 
----
+#### INET Token Contract (`contracts/inet-token/`)
+- **Purpose:** Bandwidth credit token on Stellar
+- **Registry Name:** `suv-inet-token`
+- **Instance:** `inet-token-instance`
+- **Functions:** `initialize()`, `mint()`, `burn()`, `transfer()`, `balance()`
 
-### 3. Demonstration Video (3 Minutes)
-**Video Structure:**
-- [ ] 0:00-0:15: Team name, problem, track announcement
-- [ ] 0:15-0:45: UI walkthrough and value prop
-- [ ] 0:45-2:45: **LIVE HEDERA DEMO** (token create → transfer → HashScan verification)
-- [ ] 2:45-3:00: Impact summary, Hedera features used, roadmap
+#### Payment Contract (`contracts/payment/`)
+- **Purpose:** Escrow for plan purchases
+- **Registry Name:** `suv-payment-contract`
+- **Instance:** `payment-instance`
+- **Functions:** `initialize()`, `create_payment()`, `complete_payment()`, `refund_payment()`
 
-**Video Link:** [YouTube/Vimeo URL here]
+#### Voucher Contract (`contracts/voucher/`)
+- **Purpose:** NFT-style vouchers for internet access
+- **Registry Name:** `suv-voucher-contract`
+- **Instance:** `voucher-instance`
+- **Functions:** `initialize()`, `mint_voucher()`, `activate_voucher()`, `transfer()`, `is_valid()`
 
-**Recording Tips:**
-1. Show actual working product (NOT mockups)
-2. Demonstrate `TokenCreateTransaction` or `TransferTransaction`
-3. **CRITICAL:** Switch to HashScan Testnet immediately after to show confirmed tx hash
-4. Clear audio, 1080p resolution minimum
+### 3. Functional Frontend (React + Vite + TypeScript) ✓
 
----
+- **Framework:** React 18 + Vite + TypeScript
+- **UI Library:** Tailwind CSS + Shadcn/ui
+- **Wallet Integration:** Freighter via `@stellar/freighter-api`
+- **Features:**
+  - User Dashboard with real-time stats
+  - Plan purchase flow with Stellar payments
+  - Voucher management
+  - AI-powered bandwidth optimization
+  - Equipment health monitoring
 
-### 4. Pitch Deck (12-20 Slides)
-**Required Slides:**
-- [ ] 1. Title & Vision
-- [ ] 2. The Problem (quantified data)
-- [ ] 3. The Solution (DePIN model)
-- [ ] 4. Why Hedera? (ABFT, fees, ESG - go beyond speed/cost)
-- [ ] 5. Market & Opportunity (TAM/SAM/SOM)
-- [ ] 6. Business & Revenue Model
-- [ ] 7. Tokenomics (INET/NRGY utility, distribution)
-- [ ] 8. Traction & Milestones (hackathon achievements)
-- [ ] 9. Team & Expertise
-- [ ] 10. Roadmap & The Ask
-- [ ] 11-12. Architecture & TRL Level
+### 4. Stellar Wallet Kit Integration ✓
 
-**Deck Link:** [Google Slides/PDF link]
-
----
-
-### 5. Hedera Certification
-- [ ] At least one team member certified
-- [ ] Certificate PDF uploaded to repo (`docs/Hedera_Certification.pdf`)
-- [ ] Certificate link added to README.md
-
-**Certificate Link:** [Add certification proof]
-
----
-
-## 🔍 Technical Compliance Checklist
-
-### Hedera Integration (CRITICAL)
-- [x] **HTS implemented:** `TokenCreateTransaction`, `TransferTransaction`, `AccountBalanceQuery`
-- [x] **Edge functions created:** `hedera-create-token`, `hedera-transfer-token`, `hedera-get-balance`
-- [ ] **Testnet transactions executed:** Must show real tx hash on HashScan
-- [ ] **Hedera IDs documented:** List operator account, token IDs in README
-- [x] **Economic justification:** Explained why Hedera's $0.0001 fees are essential for micro-payments
-
-### Code Quality
-- [x] **Public repository:** Not private
-- [x] **Deployable in <10 mins:** Setup instructions tested
-- [x] **No secrets committed:** `.env` in `.gitignore`, `.env.example` provided
-- [x] **Clean code:** TypeScript, proper naming, comments on complex logic
-- [x] **Architecture diagram:** Data flow Frontend → Backend → Hedera shown
-
-### TRL Level: Prototype (4-6)
-- [x] **End-to-end feature working:** Token creation and transfer functional
-- [x] **Hedera testnet integration:** Live transactions executed
-- [ ] **Demo video shows working PoC:** Live tx hash displayed
+- **Component:** `src/components/StellarWalletButton.tsx`
+- **Context:** `src/contexts/StellarContext.tsx`
+- **Wallet:** Freighter integration
+- **Features:**
+  - Connect/disconnect wallet
+  - Display XLM and token balances
+  - Sign transactions
+  - Send payments
 
 ---
 
-## 🎯 Pre-Submission Actions (DO BEFORE DEADLINE)
+## 🌍 Problem & Solution
 
-### Immediate (Next 2 Hours)
-1. [ ] **Test Hedera functions:** Execute token create/transfer on testnet
-2. [ ] **Record tx hashes:** Save for README and video
-3. [ ] **Record demo video:** 3 mins, show live Hedera transaction
-4. [ ] **Upload video:** YouTube (unlisted OK), add link to README
-5. [ ] **Invite GitHub collaborator:** `Hackathon@hashgraph-association.com`
+### Problem
+600M Africans lack reliable internet/power due to:
+- High connectivity costs (₦5K-10K/month)
+- Unreliable infrastructure
+- No community ownership incentive
 
-### Pre-Deadline (Final Hour)
-6. [ ] **Complete DoraHacks profile:** All sections filled
-7. [ ] **Upload pitch deck:** Google Slides or PDF
-8. [ ] **Add certification:** Upload proof to repo + DoraHacks
-9. [ ] **Final README check:** All links working, IDs correct
-10. [ ] **Submit on DoraHacks:** Hit submit button before 23:59 CET
+### Solution
+Solar-powered DePIN on Stellar enabling:
+- Community-owned WiFi hotspots
+- INET token rewards for bandwidth sharing
+- Fractional micropayments (₦0.01/token vs ₦50 card minimum)
+- <$0.00001 fees vs 2-5% card fees
 
 ---
 
-## 📋 DoraHacks Submission Notes (Private Field)
-
-**Copy this into DoraHacks private submission notes for judges:**
+## 🚀 Technical Architecture
 
 ```
-HEDERA TESTNET CREDENTIALS (For Judges):
-
-Operator Account ID: 0.0.XXXXXX
-Operator Private Key: [Provided separately for security]
-
-Deployed Token IDs:
-- INET Token: 0.0.XXXXXX
-- NRGY Token: 0.0.XXXXXX
-
-Sample Transaction Hash: 0.0.XXXXXX@1234567890.123456789
-
-Verify on HashScan Testnet: https://hashscan.io/testnet/transaction/[TX_HASH]
-
-Test User Credentials (Optional):
-Email: judge@test.com
-Password: HederaAfrica2025!
-
-All edge functions require JWT authentication. Use test account above or create new via signup.
-
-GitHub collaborator access granted to: Hackathon@hashgraph-association.com
+SUV Frontend (React + Vite)
+    ↓
+Freighter Wallet (@stellar/freighter-api)
+    ↓
+TypeScript Contract Clients (auto-generated)
+    ↓
+Stellar Smart Contracts (Rust/Wasm)
+    ↓
+Scaffold Stellar Registry
+    ↓
+Stellar Testnet → Horizon API
 ```
 
 ---
 
-## 🚨 Common Disqualification Reasons (AVOID!)
+## 📦 Deployment Instructions
 
-- ❌ **Private repository:** Must be public
-- ❌ **No working Hedera tx:** Pure mockups disqualified
-- ❌ **Missing video:** Demo video is mandatory
-- ❌ **Late submission:** Hard cutoff at 23:59 CET
-- ❌ **No certification:** At least 1 member must be certified
-- ❌ **Committed secrets:** Private keys in Git = security fail
-- ❌ **Can't deploy code:** Broken setup instructions
+### Prerequisites
+```bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup target add wasm32-unknown-unknown
 
----
+# Install Stellar CLI
+cargo install --locked stellar-cli --features opt
 
-## 📞 Emergency Contacts
+# Install Scaffold Stellar CLI (REQUIRED)
+cargo install --locked stellar-scaffold-cli
 
-**Hackathon Support:** [Add Discord/Telegram link]  
-**Technical Issues:** Hackathon@hashgraph-association.com  
-**Last-Minute Help:** [Mentor contact if available]
+# Configure testnet
+stellar network add --global testnet \
+  --rpc-url https://soroban-testnet.stellar.org:443 \
+  --network-passphrase "Test SDF Network ; September 2015"
+```
 
----
+### Deploy with Scaffold Stellar
+```bash
+# 1. Create and fund admin account
+stellar keys generate --global admin --network testnet
+curl "https://friendbot.stellar.org?addr=$(stellar keys address admin)"
 
-## ⏰ Time Management (Final Hours)
+# 2. Deploy contracts using Scaffold Stellar
+chmod +x scripts/deploy-contracts.sh
+./scripts/deploy-contracts.sh
 
-| Time Remaining | Priority Action |
-|----------------|-----------------|
-| 3 hours | Test Hedera functions, get real tx hashes |
-| 2 hours | Record demo video with live transaction |
-| 1 hour | Upload video, complete DoraHacks profile |
-| 30 mins | Final checks, upload pitch deck |
-| 15 mins | Submit on DoraHacks, verify confirmation |
-
-**DO NOT WAIT UNTIL LAST MINUTE TO SUBMIT!**
-
-Aim to submit 30 minutes early to account for:
-- Network issues
-- File upload delays
-- DoraHacks platform load
-- Last-minute bugs discovered
+# 3. Start frontend
+npm install
+npm run dev
+```
 
 ---
 
-## 🎉 Post-Submission
+## 💡 Why Stellar + Scaffold Stellar?
 
-After submitting:
-1. Take screenshot of DoraHacks confirmation
-2. Share submission link with team
-3. Celebrate! 🎊
-4. Prepare for potential judge Q&A
-5. Network with other teams on Discord
+### Business Impact
+- **Cost Savings:** <$0.00001 tx fees vs 2-5% card fees = ₦50-250 saved per transaction
+- **Micropayments:** Pay ₦0.01/token vs ₦50 card minimum
+- **Speed:** 3-5 second settlement vs 24-48 hours for traditional payments
+
+### Developer Experience (Scaffold Stellar)
+- **Fast Setup:** `stellar scaffold init` generates full-stack dApp
+- **Smart Registry:** Publish once, deploy many times, upgrade seamlessly
+- **Auto TypeScript:** Contract bindings generated automatically
+- **Watch Mode:** `stellar scaffold watch --build-clients` for live development
 
 ---
 
-**Good luck! You've built something impactful for Africa. 🚀**
+## 🏆 Innovation Highlights
 
-**#HederaAfrica #DePIN #Web3ForGood**
+1. **DePIN Model:** Community-owned solar WiFi infrastructure
+2. **Stellar Native:** INET token using Stellar Asset Contract (SAC)
+3. **Smart Escrow:** Secure payments with refund protection
+4. **NFT Vouchers:** Fraud-proof access codes with expiry
+5. **AI Optimization:** Bandwidth prediction using Lovable AI
+6. **Mobile-First:** Designed for African rural communities
+
+---
+
+## 📊 Market Opportunity
+
+- **TAM:** 80M Nigerians × ₦5K/month = ₦400B/year ($480M USD)
+- **Revenue Streams:**
+  - Plan sales (₦500-5K)
+  - 1% token transfer fees
+  - Equipment leasing
+  - API access for developers
+
+---
+
+## 🛣️ Roadmap
+
+### Phase 1 (Months 1-3)
+- ✅ Scaffold Stellar integration complete
+- ✅ 3 deployed contracts on Testnet
+- ✅ Functional payment flow
+- 🔄 5 pilot hotspots in Ekiti State
+
+### Phase 2 (Months 4-6)
+- 100 hotspots deployed
+- 1,000 active users
+- Mainnet deployment
+
+### Phase 3 (Months 7-12)
+- 500 hotspots
+- 10K users
+- Partner integrations (MTN, Airtel)
+
+---
+
+## 🔗 Links
+
+- **Live Demo:** https://suv.lovable.app
+- **GitHub:** https://github.com/[your-repo]
+- **Demo Video:** [3-min Stellar transaction walkthrough]
+- **Contract Addresses:** See `.env.local` after deployment
+
+---
+
+## 👤 Team
+
+**Victor Olumese**  
+Fullstack Developer, Web3 Enthusiast  
+**Contact:** support@silverumbrella.ventures
+
+---
+
+## 📄 License
+
+Apache 2.0 - See LICENSE file
+
+---
+
+**Built with Scaffold Stellar 🚀**
+
+*Empowering African communities through decentralized internet infrastructure*
