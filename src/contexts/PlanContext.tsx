@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
+import { useStellarContracts } from "@/hooks/useStellarContracts";
 
 // Define types
 export type PlanType = 'internet' | 'power';
@@ -328,6 +329,9 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [pointsRedemptions, setPointsRedemptions] = useState<PointsRedemption[]>(mockPointsRedemptions);
   const [userPoints, setUserPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Stellar contracts integration
+  const { purchasePlanWithStellar, mintVoucher } = useStellarContracts();
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -484,7 +488,6 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar' = 'stellar'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
-      // Find the selected plan
       const plan = plans.find(p => p.id === planId);
       if (!plan) {
         toast({
@@ -495,11 +498,63 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
 
-      // Simulate payment process
-      // In a real app, this would integrate with Flutterwave, crypto gateway, or TON blockchain
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay
+      // For Stellar payments, use smart contract
+      if (paymentMethod === 'stellar') {
+        // Convert Naira to XLM (mock conversion rate: 1000 Naira = 1 XLM)
+        const priceInXLM = plan.price / 1000;
+        
+        // Create payment on blockchain
+        const paymentSuccess = await purchasePlanWithStellar(
+          planId,
+          plan.price.toString(),
+          priceInXLM
+        );
 
-      // Generate a voucher
+        if (!paymentSuccess) {
+          return null;
+        }
+
+        // Generate voucher code
+        const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+        
+        // Mint voucher NFT on blockchain (admin address will be from connected wallet)
+        const voucherId = await mintVoucher(
+          planId,
+          code,
+          plan.duration,
+          (window as any).freighter?.getPublicKey?.() || "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        );
+
+        if (!voucherId) {
+          toast({
+            title: "Voucher Minting Failed",
+            description: "Payment succeeded but voucher creation failed. Contact support.",
+            variant: "destructive",
+          });
+          return null;
+        }
+
+        // Create local voucher record
+        const voucher: Voucher = {
+          id: voucherId,
+          planId,
+          code,
+          isActive: false,
+        };
+
+        setVouchers(prev => [...prev, voucher]);
+
+        toast({
+          title: "Purchase Successful",
+          description: `Voucher ${code} created on Stellar blockchain!`,
+        });
+
+        return voucher;
+      }
+
+      // Fallback for other payment methods
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       const voucher: Voucher = {
         id: `voucher_${Date.now()}`,
         planId,
@@ -507,14 +562,13 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
         isActive: false,
       };
 
-      // Add voucher to state
       setVouchers(prev => [...prev, voucher]);
 
-      const paymentMethodText = paymentMethod === 'stellar' ? 'Stellar wallet' : paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
+      const paymentMethodText = paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
       
       toast({
         title: "Purchase Successful",
-        description: `Your ${plan.name} voucher is ready to use. Paid with ${paymentMethodText}.`,
+        description: `Your ${plan.name} voucher is ready. Paid with ${paymentMethodText}.`,
       });
 
       return voucher;

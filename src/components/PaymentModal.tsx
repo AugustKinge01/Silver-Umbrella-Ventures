@@ -18,7 +18,7 @@ type PaymentModalProps = {
 };
 
 const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentModalProps) => {
-  const [tab, setTab] = useState<'card' | 'crypto' | 'stellar'>('card');
+  const [tab, setTab] = useState<'card' | 'crypto' | 'stellar'>('stellar');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -67,8 +67,14 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="card" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto' | 'stellar')}>
+        <Tabs defaultValue="stellar" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto' | 'stellar')}>
           <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="stellar" disabled={isLoading}>
+              <div className="flex items-center space-x-2">
+                <Zap size={16} />
+                <span>Stellar</span>
+              </div>
+            </TabsTrigger>
             <TabsTrigger value="card" disabled={isLoading}>
               <div className="flex items-center space-x-2">
                 <CreditCard size={16} />
@@ -79,12 +85,6 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
               <div className="flex items-center space-x-2">
                 <Wallet size={16} />
                 <span>Crypto</span>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger value="stellar" disabled={isLoading}>
-              <div className="flex items-center space-x-2">
-                <Zap size={16} />
-                <span>Stellar</span>
               </div>
             </TabsTrigger>
           </TabsList>

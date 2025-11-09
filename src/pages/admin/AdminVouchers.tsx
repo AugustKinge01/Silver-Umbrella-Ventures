@@ -5,13 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { usePlans } from "@/contexts/PlanContext";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { usePlans, PlanType } from "@/contexts/PlanContext";
 import { toast } from "@/components/ui/use-toast";
+import { useStellarContracts } from "@/hooks/useStellarContracts";
+import { useStellar } from "@/contexts/StellarContext";
 
 const AdminVouchers = () => {
   const { vouchers, plans } = usePlans();
+  const { wallet } = useStellar();
+  const { mintVoucher } = useStellarContracts();
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  const [recipientAddress, setRecipientAddress] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
   
   // Filter vouchers
   const filteredVouchers = vouchers.filter(voucher => {
@@ -64,12 +74,61 @@ const AdminVouchers = () => {
     }
   };
   
-  const handleGenerateVoucher = () => {
-    // In a real app, this would open a modal to generate new vouchers
-    toast({
-      title: "Feature Not Implemented",
-      description: "This would open a modal to generate new vouchers.",
-    });
+  const handleGenerateVoucher = async () => {
+    if (!wallet) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your Stellar wallet to mint vouchers.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedPlanId || !recipientAddress) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a plan and enter recipient address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      const plan = plans.find(p => p.id === selectedPlanId);
+      if (!plan) {
+        toast({
+          title: "Plan Not Found",
+          description: "The selected plan could not be found.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+      
+      const voucherId = await mintVoucher(
+        selectedPlanId,
+        code,
+        plan.duration,
+        recipientAddress
+      );
+
+      if (voucherId) {
+        setIsGenerateDialogOpen(false);
+        setSelectedPlanId("");
+        setRecipientAddress("");
+        toast({
+          title: "Voucher Generated",
+          description: `Voucher ${code} minted on Stellar blockchain!`,
+        });
+      }
+    } catch (error) {
+      console.error("Error generating voucher:", error);
+    } finally {
+      setIsGenerating(false);
+    }
   };
   
   const handleDeleteVoucher = (voucherId: string) => {
@@ -108,7 +167,53 @@ const AdminVouchers = () => {
             </Select>
           </div>
         </div>
-        <Button onClick={handleGenerateVoucher}>Generate Vouchers</Button>
+        <Dialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Generate Voucher</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Mint Voucher on Stellar</DialogTitle>
+              <DialogDescription>
+                Create a new voucher NFT on the Stellar blockchain
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="plan">Select Plan</Label>
+                <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
+                  <SelectTrigger id="plan">
+                    <SelectValue placeholder="Choose a plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {plans.map(plan => (
+                      <SelectItem key={plan.id} value={plan.id}>
+                        {plan.name} ({plan.type}) - ₦{plan.price}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="recipient">Recipient Stellar Address</Label>
+                <Input
+                  id="recipient"
+                  placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX..."
+                  value={recipientAddress}
+                  onChange={(e) => setRecipientAddress(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                onClick={handleGenerateVoucher} 
+                disabled={isGenerating || !selectedPlanId || !recipientAddress}
+              >
+                {isGenerating ? "Minting..." : "Mint Voucher"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       
       <Card>
