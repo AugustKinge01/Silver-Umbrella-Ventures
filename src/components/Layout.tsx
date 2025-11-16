@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare, Gift, Menu } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import silverUmbrellaLogo from "@/assets/silver-umbrella-logo.png";
-import StellarWalletButton from "./StellarWalletButton";
+import Web3WalletButton from "./Web3WalletButton";
 import MobileNav from "./MobileNav";
 
 type LayoutProps = {
@@ -56,7 +56,7 @@ const Layout = ({ children, title, description }: LayoutProps) => {
           </div>
           
           <div className="flex items-center gap-2">
-            <StellarWalletButton />
+            <Web3WalletButton />
             <Button variant="ghost" size="sm" onClick={logout} className="hidden md:flex">
               Logout
             </Button>
