@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useWeb3 } from "@/contexts/Web3Context";
+import { useOneChain } from "@/contexts/OneChainContext";
 import { Wallet, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Web3WalletButton = () => {
-  const { wallet, isConnecting, connectWallet, disconnectWallet, refreshBalance } = useWeb3();
+const OneChainWalletButton = () => {
+  const { wallet, isConnecting, connectWallet, disconnectWallet, refreshBalance } = useOneChain();
 
   if (!wallet) {
     return (
@@ -30,7 +30,7 @@ const Web3WalletButton = () => {
         ) : (
           <>
             <Wallet className="h-4 w-4" />
-            <span className="hidden sm:inline">Connect Wallet</span>
+            <span className="hidden sm:inline">Connect OneWallet</span>
           </>
         )}
       </Button>
@@ -75,4 +75,4 @@ const Web3WalletButton = () => {
   );
 };
 
-export default Web3WalletButton;
+export default OneChainWalletButton;

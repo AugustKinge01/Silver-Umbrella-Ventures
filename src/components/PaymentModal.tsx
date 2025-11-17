@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { CreditCard, Wallet } from "lucide-react";
 import { Plan } from "@/contexts/PlanContext";
 import { Spinner } from "@/components/ui/spinner";
-import { useWeb3 } from "@/contexts/Web3Context";
+import { useOneChain } from "@/contexts/OneChainContext";
 
 type PaymentModalProps = {
   isOpen: boolean;
@@ -27,7 +27,7 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
   });
   const [walletAddress, setWalletAddress] = useState('');
   
-  const { wallet, connectWallet } = useWeb3();
+  const { wallet, connectWallet } = useOneChain();
 
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
