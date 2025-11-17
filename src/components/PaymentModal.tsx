@@ -4,21 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Wallet, Zap } from "lucide-react";
+import { CreditCard, Wallet } from "lucide-react";
 import { Plan } from "@/contexts/PlanContext";
 import { Spinner } from "@/components/ui/spinner";
-import { useStellar } from "@/contexts/StellarContext";
+import { useWeb3 } from "@/contexts/Web3Context";
 
 type PaymentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   plan: Plan | null;
-  onPayment: (paymentMethod: 'card' | 'crypto' | 'stellar') => Promise<void>;
+  onPayment: (paymentMethod: 'card' | 'crypto') => Promise<void>;
   isLoading: boolean;
 };
 
 const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentModalProps) => {
-  const [tab, setTab] = useState<'card' | 'crypto' | 'stellar'>('stellar');
+  const [tab, setTab] = useState<'card' | 'crypto'>('crypto');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -27,7 +27,7 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
   });
   const [walletAddress, setWalletAddress] = useState('');
   
-  const { wallet, connectWallet } = useStellar();
+  const { wallet, connectWallet } = useWeb3();
 
   const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,22 +38,16 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
   const handleCryptoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
-    await onPayment('crypto');
-  };
-
-  const handleStellarSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isLoading) return;
     
     if (!wallet) {
       await connectWallet();
       return;
     }
     
-    await onPayment('stellar');
+    await onPayment('crypto');
   };
 
-  const xlmEquivalent = plan ? (plan.price / 100).toFixed(2) : '0'; // Rough XLM conversion (₦100 per XLM)
+  const oneEquivalent = plan ? (plan.price / 1000).toFixed(4) : '0'; // Rough ONE conversion (₦1000 per ONE)
 
   if (!plan) return null;
 
@@ -67,24 +61,18 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="stellar" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto' | 'stellar')}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="stellar" disabled={isLoading}>
+        <Tabs defaultValue="crypto" value={tab} onValueChange={(value) => setTab(value as 'card' | 'crypto')}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="crypto" disabled={isLoading}>
               <div className="flex items-center space-x-2">
-                <Zap size={16} />
-                <span>Stellar</span>
+                <Wallet size={16} />
+                <span>OneChain</span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="card" disabled={isLoading}>
               <div className="flex items-center space-x-2">
                 <CreditCard size={16} />
                 <span>Card</span>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger value="crypto" disabled={isLoading}>
-              <div className="flex items-center space-x-2">
-                <Wallet size={16} />
-                <span>Crypto</span>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -148,55 +136,26 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
           
           <TabsContent value="crypto">
             <form onSubmit={handleCryptoSubmit} className="space-y-4 py-2">
-              <div className="space-y-2">
-                <Label htmlFor="walletAddress">Your Wallet Address (for receipt)</Label>
-                <Input 
-                  id="walletAddress"
-                  value={walletAddress}
-                  onChange={(e) => setWalletAddress(e.target.value)}
-                  placeholder="0x..."
-                  disabled={isLoading}
-                />
-              </div>
-              
-              <div className="bg-silver-50 p-4 rounded-md">
-                <p className="text-sm text-silver-700 mb-2">Send payment to:</p>
-                <p className="font-mono text-xs break-all bg-white p-2 rounded border">
-                  0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t
-                </p>
-                <p className="text-xs text-silver-600 mt-2">
-                  Equivalent to ₦{plan.price.toLocaleString()} in USDT (TRC20)
-                </p>
-              </div>
-              
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <><Spinner size="sm" className="mr-2" /> Verifying Payment...</> : "I've Sent the Payment"}
-              </Button>
-            </form>
-          </TabsContent>
-          
-          <TabsContent value="stellar">
-            <form onSubmit={handleStellarSubmit} className="space-y-4 py-2">
               {!wallet ? (
-                <div className="bg-blue-50 p-4 rounded-md text-center">
-                  <Zap size={32} className="mx-auto text-blue-600 mb-2" />
-                  <p className="text-sm text-blue-700 mb-4">
-                    Connect your Stellar wallet (Freighter) to proceed
+                <div className="bg-primary/10 p-4 rounded-md text-center">
+                  <Wallet size={32} className="mx-auto text-primary mb-2" />
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Connect your OneChain wallet to proceed
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-blue-50 p-4 rounded-md">
-                    <p className="text-sm text-blue-700 mb-2">Connected Wallet:</p>
-                    <p className="font-mono text-xs break-all bg-white p-2 rounded border">
-                      {wallet.publicKey}
+                  <div className="bg-primary/10 p-4 rounded-md">
+                    <p className="text-sm text-muted-foreground mb-2">Connected Wallet:</p>
+                    <p className="font-mono text-xs break-all bg-background p-2 rounded border">
+                      {wallet.address}
                     </p>
                   </div>
                   
-                  <div className="bg-silver-50 p-4 rounded-md">
-                    <p className="text-sm text-silver-700 mb-2">Payment Amount:</p>
-                    <p className="font-bold text-lg">{xlmEquivalent} XLM</p>
-                    <p className="text-xs text-silver-600">
+                  <div className="bg-secondary/10 p-4 rounded-md">
+                    <p className="text-sm text-muted-foreground mb-2">Payment Amount:</p>
+                    <p className="font-bold text-lg">{oneEquivalent} ONE</p>
+                    <p className="text-xs text-muted-foreground">
                       Equivalent to ₦{plan.price.toLocaleString()}
                     </p>
                   </div>
@@ -207,9 +166,9 @@ const PaymentModal = ({ isOpen, onClose, plan, onPayment, isLoading }: PaymentMo
                 {isLoading ? (
                   <><Spinner size="sm" className="mr-2" /> Processing...</>
                 ) : !wallet ? (
-                  "Connect Stellar Wallet"
+                  "Connect OneChain Wallet"
                 ) : (
-                  `Pay ${xlmEquivalent} XLM`
+                  `Pay ${oneEquivalent} ONE`
                 )}
               </Button>
             </form>
