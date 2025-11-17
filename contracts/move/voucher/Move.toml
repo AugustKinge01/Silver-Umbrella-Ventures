@@ -1,0 +1,11 @@
+[package]
+name = "voucher"
+version = "1.0.0"
+edition = "2024.beta"
+
+[dependencies]
+One = { git = "https://github.com/one-chain-labs/onechain.git", subdir = "crates/one-framework/packages/one-framework", rev = "framework/mainnet" }
+
+[addresses]
+voucher = "0x0"
+one = "0x1"

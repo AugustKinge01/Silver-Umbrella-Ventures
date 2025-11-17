@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { PlanProvider } from "./contexts/PlanContext";
-import { Web3Provider } from "./contexts/Web3Context";
+import { OneChainProvider } from "./contexts/OneChainContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -34,7 +34,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
     <QueryClientProvider client={queryClient}>
-      <Web3Provider>
+      <OneChainProvider>
         <AuthProvider>
           <PlanProvider>
             <TooltipProvider>
@@ -46,7 +46,7 @@ const App = () => (
             </TooltipProvider>
           </PlanProvider>
         </AuthProvider>
-      </Web3Provider>
+      </OneChainProvider>
     </QueryClientProvider>
 );
 
