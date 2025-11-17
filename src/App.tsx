@@ -41,7 +41,30 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
-...
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  
+                  {/* Protected routes */}
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
+                  <Route path="/vouchers" element={<ProtectedRoute><VouchersPage /></ProtectedRoute>} />
+                  <Route path="/hotspots" element={<ProtectedRoute><HotspotsPage /></ProtectedRoute>} />
+                  <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
+                  <Route path="/rewards" element={<ProtectedRoute><RewardsPage /></ProtectedRoute>} />
+                  
+                  {/* Admin routes */}
+                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                  <Route path="/admin/plans" element={<AdminRoute><AdminPlans /></AdminRoute>} />
+                  <Route path="/admin/vouchers" element={<AdminRoute><AdminVouchers /></AdminRoute>} />
+                  <Route path="/admin/rewards" element={<AdminRoute><AdminRewards /></AdminRoute>} />
+                  <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+                  <Route path="/admin/payments" element={<AdminRoute><AdminPayments /></AdminRoute>} />
+                  <Route path="/admin/support" element={<AdminRoute><AdminSupport /></AdminRoute>} />
+                  
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
               </BrowserRouter>
             </TooltipProvider>
           </PlanProvider>
