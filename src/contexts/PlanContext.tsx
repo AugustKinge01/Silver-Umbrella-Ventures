@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
-import { useStellarContracts } from "@/hooks/useStellarContracts";
+import { useOneChainContracts } from "@/hooks/useOneChainContracts";
 
 // Define types
 export type PlanType = 'internet' | 'power';
@@ -117,7 +117,7 @@ type PlanContextType = {
   pointsRedemptions: PointsRedemption[];
   userPoints: number;
   isLoading: boolean;
-  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar') => Promise<Voucher | null>;
+  purchasePlan: (planId: string, paymentMethod: 'card' | 'crypto') => Promise<Voucher | null>;
   activateVoucher: (voucherId: string) => Promise<boolean>;
   updateSignalStrengths: () => void;
   submitSupportTicket: (ticket: Omit<SupportTicket, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
@@ -330,8 +330,8 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [userPoints, setUserPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Stellar contracts integration
-  const { purchasePlanWithStellar, mintVoucher } = useStellarContracts();
+  // OneChain contracts integration
+  const { purchasePlan: purchasePlanContract, mintVoucher } = useOneChainContracts();
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -485,7 +485,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' | 'stellar' = 'stellar'): Promise<Voucher | null> => {
+  const purchasePlan = async (planId: string, paymentMethod: 'card' | 'crypto' = 'crypto'): Promise<Voucher | null> => {
     setIsLoading(true);
     try {
       const plan = plans.find(p => p.id === planId);
@@ -498,19 +498,19 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
 
-      // For Stellar payments, use smart contract
-      if (paymentMethod === 'stellar') {
-        // Convert Naira to XLM (mock conversion rate: 1000 Naira = 1 XLM)
-        const priceInXLM = plan.price / 1000;
+      // For crypto payments, use smart contract
+      if (paymentMethod === 'crypto') {
+        // Convert Naira to ONE (mock conversion rate: 1000 Naira = 1 ONE)
+        const priceInONE = plan.price / 1000;
         
-        // Create payment on blockchain
-        const paymentSuccess = await purchasePlanWithStellar(
+        // Create payment on blockchain using ONE tokens
+        const paymentId = await purchasePlanContract(
           planId,
-          plan.price.toString(),
-          priceInXLM
+          priceInONE.toString(),
+          true // use native ONE token
         );
 
-        if (!paymentSuccess) {
+        if (!paymentId) {
           return null;
         }
 
@@ -522,7 +522,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
           planId,
           code,
           plan.duration,
-          (window as any).freighter?.getPublicKey?.() || "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          (window as any).ethereum?.selectedAddress || "0x0000000000000000000000000000000000000000"
         );
 
         if (!voucherId) {
@@ -564,7 +564,7 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
 
       setVouchers(prev => [...prev, voucher]);
 
-      const paymentMethodText = paymentMethod === 'crypto' ? 'cryptocurrency' : 'card';
+      const paymentMethodText = paymentMethod === 'card' ? 'card' : 'cryptocurrency';
       
       toast({
         title: "Purchase Successful",
