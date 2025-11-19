@@ -17,19 +17,19 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate(checkIsAdmin() ? "/admin" : "/dashboard");
-    }
-  }, [user, navigate, checkIsAdmin]);
+  // Auto-redirect disabled to allow testing login/signup
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate(checkIsAdmin() ? "/admin" : "/dashboard");
+  //   }
+  // }, [user, navigate, checkIsAdmin]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
     const success = await signIn(email, password);
     if (success) {
-      navigate("/dashboard");
+      navigate(checkIsAdmin() ? "/admin" : "/dashboard");
     }
   };
 
@@ -38,7 +38,7 @@ const Login = () => {
     if (!email.trim() || !password.trim()) return;
     const success = await signUp(email, password, fullName);
     if (success) {
-      navigate("/dashboard");
+      navigate(checkIsAdmin() ? "/admin" : "/dashboard");
     }
   };
 
