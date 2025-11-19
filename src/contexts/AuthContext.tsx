@@ -29,7 +29,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch user roles
   const fetchUserRoles = async (userId: string): Promise<string[]> => {
@@ -63,8 +63,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('Error checking session:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -91,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Sign up function
   const signUp = async (email: string, password: string, fullName?: string): Promise<boolean> => {
-    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -118,14 +115,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive",
       });
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   // Sign in function
   const signIn = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -147,8 +141,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive",
       });
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
   
