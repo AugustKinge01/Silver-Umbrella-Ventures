@@ -78,7 +78,6 @@ const Login = () => {
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
                       required
                     />
                   </div>
@@ -91,7 +90,6 @@ const Login = () => {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
                       required
                     />
                   </div>
@@ -99,13 +97,9 @@ const Login = () => {
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={!email.trim() || !password.trim() || isLoading}
+                    disabled={!email.trim() || !password.trim()}
                   >
-                    {isLoading ? (
-                      <><Spinner size="sm" className="mr-2" /> Signing in...</>
-                    ) : (
-                      "Sign In"
-                    )}
+                    Sign In
                   </Button>
                 </form>
               </TabsContent>
@@ -120,7 +114,6 @@ const Login = () => {
                       placeholder="John Doe"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      disabled={isLoading}
                     />
                   </div>
                   
@@ -132,7 +125,6 @@ const Login = () => {
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
                       required
                     />
                   </div>
@@ -145,7 +137,6 @@ const Login = () => {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
@@ -156,13 +147,9 @@ const Login = () => {
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={!email.trim() || !password.trim() || isLoading}
+                    disabled={!email.trim() || !password.trim()}
                   >
-                    {isLoading ? (
-                      <><Spinner size="sm" className="mr-2" /> Creating account...</>
-                    ) : (
-                      "Sign Up"
-                    )}
+                    Sign Up
                   </Button>
                 </form>
               </TabsContent>
