@@ -17,6 +17,9 @@ import VouchersPage from "./pages/VouchersPage";
 import HotspotsPage from "./pages/HotspotsPage";
 import SupportPage from "./pages/SupportPage";
 import RewardsPage from "./pages/RewardsPage";
+import CoworkingPage from "./pages/CoworkingPage";
+import GameHubPage from "./pages/GameHubPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPlans from "./pages/admin/AdminPlans";
 import AdminVouchers from "./pages/admin/AdminVouchers";
@@ -52,6 +55,9 @@ const App = () => (
                   <Route path="/hotspots" element={<ProtectedRoute><HotspotsPage /></ProtectedRoute>} />
                   <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
                   <Route path="/rewards" element={<ProtectedRoute><RewardsPage /></ProtectedRoute>} />
+                  <Route path="/coworking" element={<ProtectedRoute><CoworkingPage /></ProtectedRoute>} />
+                  <Route path="/gaming" element={<ProtectedRoute><GameHubPage /></ProtectedRoute>} />
+                  <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
                   
                   {/* Admin routes */}
                   <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
