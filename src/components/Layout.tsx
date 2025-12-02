@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare, Gift, Menu } from "lucide-react";
+import { Zap, Wifi, CreditCard, Calendar, Settings, Users, MessageSquare, Gift, Gamepad2, Building2, Trophy } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import silverUmbrellaLogo from "@/assets/silver-umbrella-logo.png";
 import OneChainWalletButton from "./OneChainWalletButton";
@@ -32,6 +32,9 @@ const Layout = ({ children, title, description }: LayoutProps) => {
       ]
     : [
         { name: "Dashboard", href: "/dashboard", icon: <Wifi size={20} /> },
+        { name: "Coworking", href: "/coworking", icon: <Building2 size={20} /> },
+        { name: "Game Hub", href: "/gaming", icon: <Gamepad2 size={20} /> },
+        { name: "Leaderboard", href: "/leaderboard", icon: <Trophy size={20} /> },
         { name: "Plans", href: "/plans", icon: <Calendar size={20} /> },
         { name: "Vouchers", href: "/vouchers", icon: <CreditCard size={20} /> },
         { name: "Rewards", href: "/rewards", icon: <Gift size={20} /> },
@@ -51,7 +54,7 @@ const Layout = ({ children, title, description }: LayoutProps) => {
             <img src={silverUmbrellaLogo} alt="Silver Umbrella" className="h-7 w-7 md:h-8 md:w-8" />
             <div className="flex flex-col">
               <span className="font-semibold text-sm md:text-base leading-tight">Silver Umbrella</span>
-              <span className="text-[10px] md:text-xs text-muted-foreground leading-tight hidden sm:block">dePIN Network</span>
+              <span className="text-[10px] md:text-xs text-muted-foreground leading-tight hidden sm:block">Ecosystem</span>
             </div>
           </div>
           
