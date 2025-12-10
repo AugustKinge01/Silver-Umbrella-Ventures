@@ -1,0 +1,65 @@
+name: Auto Build & Deploy (Contracts + Frontend)
+
+on:
+  push:
+    branches:
+      - mvp-deploy
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
+
+      - name: Install wasm target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install Stellar CLI & Scaffold Stellar
+        run: |
+          cargo install --locked stellar-cli --features opt || true
+          cargo install --locked stellar-scaffold-cli || true
+
+      - name: Prepare environment file for deployment
+        run: |
+          # Create .env.local used by scripts/deploy-contracts.sh (secrets will be added later)
+          echo "HEDERA_OPERATOR_ID=${{ secrets.HEDERA_OPERATOR_ID }}" >> .env.local || true
+          echo "HEDERA_OPERATOR_KEY=${{ secrets.HEDERA_OPERATOR_KEY }}" >> .env.local || true
+          echo "STELLAR_ADMIN_SEED=${{ secrets.STELLAR_ADMIN_SEED }}" >> .env.local || true
+          echo "VITE_SUPABASE_PROJECT_ID=${{ secrets.VITE_SUPABASE_PROJECT_ID }}" >> .env.local || true
+          echo "VITE_SUPABASE_PUBLISHABLE_KEY=${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}" >> .env.local || true
+          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env.local || true
+
+      - name: Make deploy script executable
+        run: chmod +x ./scripts/deploy-contracts.sh || true
+
+      - name: Build & deploy contracts (Scaffold Stellar) 
+        run: |
+          ./scripts/deploy-contracts.sh || true
+        env:
+          HOME: ${{ runner.temp }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend (Vite)
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          publish_dir: ./dist
+          publish_branch: gh-pages
