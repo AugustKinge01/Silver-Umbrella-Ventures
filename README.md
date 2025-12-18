@@ -7,8 +7,7 @@
 ---
 
 ## 🌍 The Problem
-
-Urban communities in emerging markets face fragmented access to:
+There are over 70 million people in rural and peri-urban communities in Nigeria facing the problem of poor access to:
 - **Reliable internet connectivity** - expensive, unreliable infrastructure
 - **Quality workspaces** - limited affordable coworking options
 - **Gaming & entertainment** - no access to premium gaming experiences
@@ -17,6 +16,12 @@ Urban communities in emerging markets face fragmented access to:
 ## 💡 Our Solution: Work • Play • Earn
 
 SUV is a hybrid digital ecosystem that combines physical spaces with blockchain-powered rewards:
+
+### 📡 Internet & Hotspots
+- **Solar-Powered WiFi:** Community hotspots with reliable connectivity
+- **Flexible Plans:** Pay-per-use or subscription models
+- **Voucher System:** Prepaid internet access tokens
+
 
 ### 🏢 Coworking Hub
 - **4 Tier System:** Basic → Standard → Pro → VIP
@@ -30,10 +35,6 @@ SUV is a hybrid digital ecosystem that combines physical spaces with blockchain-
 - **Mobile Esports:** Competitive mobile gaming tournaments
 - **Tournaments:** Regular competitions with crypto prizes
 
-### 📡 Internet & Hotspots
-- **Solar-Powered WiFi:** Community hotspots with reliable connectivity
-- **Flexible Plans:** Pay-per-use or subscription models
-- **Voucher System:** Prepaid internet access tokens
 
 ### 🏆 XP & Rewards System
 - **Earn XP:** Every activity earns experience points
@@ -131,16 +132,16 @@ npm run build
 
 ## 💰 Revenue Model
 
-1. **Coworking Subscriptions** - Tiered monthly plans
-2. **Gaming Sessions** - Hourly station rentals
-3. **Tournament Entry Fees** - Competitive gaming
-4. **Internet Plans** - Connectivity subscriptions
-5. **Crypto Transaction Fees** - 1% on token transfers
-
+1. **Internet Plans** - Connectivity subscriptions
+2. **Gaming Sessions** - paid time slots 
+3. **Other adjacent upsells** - printing, photocopying, snacks, etc.
+4. **Coworking Subscriptions** - Tiered monthly plans
 ---
 
 ## 🎯 MVP Features
-
+- [ ] Internet plan purchases
+- [ ] Hotspot connectivity
+- [ ] Voucher redemption
 - [x] User authentication & profiles
 - [x] XP system with levels & leaderboards
 - [x] Coworking tier configurations
@@ -148,16 +149,12 @@ npm run build
 - [x] Tournament system
 - [x] Crypto wallet integration
 - [x] Admin dashboard
-- [ ] Internet plan purchases
-- [ ] Hotspot connectivity
-- [ ] Voucher redemption
-
 ---
 
 ## 👤 Team
 
-**Victor Olumese** - Fullstack Developer, Web3 Enthusiast  
-**Contact:** support@silverumbrella.ventures
+**Gabriel Abayomi Areje** - Founder, Web3 Enthusiast  
+**Contact:** lightfab1234@gmail.com
 
 ---
 
