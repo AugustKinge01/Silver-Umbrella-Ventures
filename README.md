@@ -1,154 +1,156 @@
-# Silver Umbrella Ventures (SUV) - Scaffold Stellar Edition
+# Silver Umbrella Ventures (SUV) - Hybrid Digital Ecosystem
 
-## 🏆 Scaffold Stellar Open Innovation Hackathon
-**Track:** DePIN & IoT  
-**Built with:** [Scaffold Stellar Framework](https://scaffoldstellar.org)
-
-> ✅ **Hackathon Compliant:** This project uses the official Scaffold Stellar CLI for smart contract deployment and management
+## 🏆 OneHack Hackathon Submission
+**Track:** DePIN & IoT / Web3 Ecosystem  
+**Built with:** React, Vite, TypeScript, OneChain EVM, Supabase
 
 ---
 
-## 🌍 Problem: 600M Africans lack reliable internet/power
+## 🌍 The Problem
 
-Rural communities face high connectivity costs, unreliable infrastructure, and no incentive for community ownership.
+Urban communities in emerging markets face fragmented access to:
+- **Reliable internet connectivity** - expensive, unreliable infrastructure
+- **Quality workspaces** - limited affordable coworking options
+- **Gaming & entertainment** - no access to premium gaming experiences
+- **Digital identity & rewards** - no incentives for community participation
 
-## 💡 Solution: Solar-Powered DePIN on Stellar
+## 💡 Our Solution: Work • Play • Earn
 
-SUV enables communities to deploy solar WiFi hotspots, earn INET/NRGY tokens, and trade bandwidth using Stellar smart contracts.
+SUV is a hybrid digital ecosystem that combines physical spaces with blockchain-powered rewards:
+
+### 🏢 Coworking Hub
+- **4 Tier System:** Basic → Standard → Pro → VIP
+- **Meal Benefits:** Higher tiers include daily meals (up to 2/day)
+- **Flexible Booking:** Hourly, daily, or monthly passes
+- **XP Rewards:** Earn points for every hour worked
+
+### 🎮 Game Hub
+- **Console Gaming:** PS4/PS5 stations
+- **VR Experiences:** Racing simulators & immersive VR
+- **Mobile Esports:** Competitive mobile gaming tournaments
+- **Tournaments:** Regular competitions with crypto prizes
+
+### 📡 Internet & Hotspots
+- **Solar-Powered WiFi:** Community hotspots with reliable connectivity
+- **Flexible Plans:** Pay-per-use or subscription models
+- **Voucher System:** Prepaid internet access tokens
+
+### 🏆 XP & Rewards System
+- **Earn XP:** Every activity earns experience points
+- **Level Up:** Progress through levels for perks
+- **Leaderboards:** Compete with the community
+- **Player DID:** On-chain decentralized identity
 
 ---
 
-## 🚀 Scaffold Stellar Integration (Meets All Hackathon Requirements)
+## 🔗 Blockchain Integration (OneChain EVM)
 
-### ✅ 1. Deployed Smart Contracts (Rust → Wasm)
+### Smart Contracts
+- **INET Token:** Utility token for bandwidth credits
+- **Payment Contract:** Escrow for secure crypto payments
+- **Voucher Contract:** NFT-based access vouchers
 
-#### Payment Contract (`contracts/payment/`)
-- **Escrow for plan purchases** with XLM/tokens
-- **Why Stellar:** <$0.00001 fees vs 2-5% card fees saves ₦50-250 per transaction
-- **Functions:** `create_payment()`, `complete_payment()`, `refund_payment()`
+### Wallet Integration
+- **OneWallet:** Native EVM wallet for transactions
+- **Crypto Payments:** Pay for all services with crypto
+- **Low Fees:** < $0.01 transaction costs
 
-#### INET Token (`contracts/inet-token/`)
-- **Stellar Asset Contract** for internet bandwidth credits
-- **Why Stellar:** Enables pay-per-MB pricing (₦0.01/token vs ₦50 card minimum)
-- **Functions:** `mint()`, `burn()`, `transfer()`, `balance()`
+---
 
-#### Voucher Contract (`contracts/voucher/`)
-- **NFT vouchers** for plan access with fraud prevention
-- **Functions:** `mint_voucher()`, `activate_voucher()`, `transfer()`
+## 🛠️ Tech Stack
 
-### ✅ 2. Functional Frontend (React + Vite + TypeScript)
-
-- Modern React UI generated from Scaffold Stellar template
-- AI-powered bandwidth optimization (Lovable AI)
-- Real-time equipment health monitoring
-- Mobile-first responsive design
-
-### ✅ 3. Stellar Wallet Kit Integration
-
-**Component:** `src/components/StellarWalletButton.tsx`  
-**Wallet:** Freighter integration for:
-- Account connection
-- Transaction signing
-- Balance display (XLM + tokens)
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 18, Vite, TypeScript, TailwindCSS |
+| UI Components | shadcn/ui, Radix UI, Lucide Icons |
+| Backend | Supabase (Postgres, Auth, Edge Functions) |
+| Blockchain | OneChain EVM, ethers.js v6, Solidity |
+| State | React Query, React Context |
 
 ---
 
 ## 📐 Architecture
 
 ```
-SUV Frontend (React/Vite)
-    ↓
-Stellar Wallet Kit (Freighter)
-    ↓
-TypeScript Clients (Auto-generated)
-    ↓
-Stellar Smart Contracts (Rust/Wasm)
-    ↓
-Stellar Testnet → Horizon API → Mirror Nodes
+┌─────────────────────────────────────────────────────────┐
+│                    SUV Frontend                         │
+│              (React + Vite + TypeScript)                │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+┌─────────────────┐ ┌───────────┐ ┌─────────────────┐
+│   Supabase      │ │ OneChain  │ │   Edge          │
+│   (Database,    │ │ EVM       │ │   Functions     │
+│    Auth, RLS)   │ │ (Wallet)  │ │   (AI, Logic)   │
+└─────────────────┘ └───────────┘ └─────────────────┘
 ```
 
 ---
 
-## 🛠️ Setup & Deployment (Scaffold Stellar)
+## 🚀 Quick Start
 
-### Prerequisites
 ```bash
-# 1. Install Rust and Cargo
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup target add wasm32-unknown-unknown
-
-# 2. Install Stellar CLI
-cargo install --locked stellar-cli --features opt
-
-# 3. Install Scaffold Stellar CLI (REQUIRED for hackathon)
-cargo install --locked stellar-scaffold-cli
-
-# 4. Install Node.js dependencies
+# Install dependencies
 npm install
 
-# 5. Configure Stellar testnet
-stellar network add --global testnet \
-  --rpc-url https://soroban-testnet.stellar.org:443 \
-  --network-passphrase "Test SDF Network ; September 2015"
+# Start development server
+npm run dev
 
-# 6. Create and fund admin account
-stellar keys generate --global admin --network testnet
-curl "https://friendbot.stellar.org?addr=$(stellar keys address admin)"
-```
-
-### Quick Start with Scaffold Stellar
-
-#### Option A: Deploy Contracts (Automated)
-```bash
-# Deploy using Scaffold Stellar registry
-chmod +x scripts/deploy-contracts.sh
-./scripts/deploy-contracts.sh
-```
-
-This automatically:
-- Builds all contracts using Scaffold Stellar
-- Publishes to Stellar registry with `stellar registry publish`
-- Deploys contract instances with `stellar registry deploy`
-- Generates TypeScript bindings
-- Creates `.env.local` with contract addresses
-
-#### Option B: Development Mode with Watch
-```bash
-# Start Scaffold Stellar watch mode (auto-rebuild on changes)
-stellar scaffold watch --build-clients
-
-# In another terminal, run the frontend
-npm run dev  # Runs on localhost:5173
-```
-
-### Manual Deployment with Scaffold Stellar
-See detailed instructions in [`contracts/README.md`](./contracts/README.md)
-
-### Verify Scaffold Stellar Installation
-```bash
-# Check if Scaffold Stellar CLI is installed
-stellar scaffold --version
-
-# View available Scaffold Stellar commands
-stellar scaffold --help
-stellar registry --help
+# Build for production
+npm run build
 ```
 
 ---
 
-## 💰 Market & Revenue
+## 📊 Database Schema
 
-- **TAM:** 80M Nigerians × ₦5K/month = ₦400B/year
-- **Revenue:** Plan sales (₦500-5K), 1% token transfer fees, equipment leasing
+### Core Tables
+- `profiles` - User profile information
+- `user_roles` - Role-based access (admin, moderator, user)
+- `user_xp` - XP balances and levels
+- `xp_transactions` - XP earning history
+- `player_did` - On-chain identity and achievements
+
+### Coworking
+- `coworking_tier_configs` - Tier pricing and benefits
+- `coworking_spaces` - Available workspaces
+- `coworking_bookings` - User reservations
+
+### Gaming
+- `gaming_stations` - Console/VR stations
+- `gaming_sessions` - Active play sessions
+- `tournaments` - Scheduled competitions
+- `tournament_participants` - Registered players
+
+### Payments & Support
+- `payments` - Transaction history
+- `support_tickets` - Customer support
 
 ---
 
-## 🏆 Traction
+## 💰 Revenue Model
 
-- ✅ 3 deployed Stellar contracts on Testnet
-- ✅ Functional payment flow with Freighter wallet
-- ✅ AI bandwidth optimization + real-time monitoring
-- **Roadmap:** 5 pilot hotspots in Ekiti State → 10K users by Month 12
+1. **Coworking Subscriptions** - Tiered monthly plans
+2. **Gaming Sessions** - Hourly station rentals
+3. **Tournament Entry Fees** - Competitive gaming
+4. **Internet Plans** - Connectivity subscriptions
+5. **Crypto Transaction Fees** - 1% on token transfers
+
+---
+
+## 🎯 MVP Features
+
+- [x] User authentication & profiles
+- [x] XP system with levels & leaderboards
+- [x] Coworking tier configurations
+- [x] Gaming station management
+- [x] Tournament system
+- [x] Crypto wallet integration
+- [x] Admin dashboard
+- [ ] Internet plan purchases
+- [ ] Hotspot connectivity
+- [ ] Voucher redemption
 
 ---
 
@@ -159,10 +161,9 @@ stellar registry --help
 
 ---
 
-## 📎 Resources
+## 📎 Links
 
-- **Demo Video:** [3-min live Stellar transaction on Testnet]
-- **Pitch Deck:** [Link]
-- **Website:** https://suv.lovable.app
+- **Live Demo:** https://suv.lovable.app
+- **Documentation:** See `/docs` folder
 
-**Built with Scaffold Stellar 🚀**
+**Built for OneHack 🚀**
