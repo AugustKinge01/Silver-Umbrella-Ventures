@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import gamingPeople from "@/assets/gaming-people.jpg";
+import esportsTournament from "@/assets/esports-tournament.jpg";
 
 type StationType = 'ps4' | 'ps5' | 'vr_racing' | 'vr_immersive' | 'mobile_esports';
 type TournamentStatus = 'upcoming' | 'registration' | 'in_progress' | 'completed' | 'cancelled';
@@ -203,10 +205,17 @@ const GameHubPage = () => {
   return (
     <Layout title="Game Hub" description="Console gaming, VR racing, tournaments & esports">
       {/* Hero Section */}
-      <div className="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-purple-900/40 via-indigo-900/30 to-background p-8">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAzMHYySDI0di0yaDEyek0zNiAyNnYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-        <div className="relative z-10">
-          <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
+      <div className="relative rounded-2xl overflow-hidden mb-8">
+        <div className="absolute inset-0">
+          <img 
+            src={gamingPeople} 
+            alt="Gamers enjoying VR and console gaming"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
+        </div>
+        <div className="relative z-10 p-8 md:p-12">
+          <Badge className="mb-4 bg-purple-500/90 text-white border-purple-500/30">
             <Gamepad2 className="w-3 h-3 mr-1" />
             Level Up Your Gaming
           </Badge>

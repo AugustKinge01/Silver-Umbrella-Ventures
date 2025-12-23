@@ -9,6 +9,12 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
 import silverUmbrellaLogo from "@/assets/silver-umbrella-logo.png";
+import coworkingPeople from "@/assets/coworking-people.jpg";
+import gamingPeople from "@/assets/gaming-people.jpg";
+import communityWifi from "@/assets/community-wifi.jpg";
+import solarHubCommunity from "@/assets/solar-hub-community.jpg";
+import personEntrepreneur from "@/assets/person-entrepreneur.jpg";
+import esportsTournament from "@/assets/esports-tournament.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -49,8 +55,15 @@ const Index = () => {
       </header>
 
       {/* Hero section */}
-      <div className="relative bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent"></div>
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={solarHubCommunity} 
+            alt="Community gathering under solar umbrella"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/60"></div>
+        </div>
         
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 md:py-20">
           <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12">
@@ -129,13 +142,18 @@ const Index = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {/* Coworking Card */}
                 <Card 
-                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group"
+                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group overflow-hidden"
                   onClick={() => navigate('/coworking')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                      <Coffee size={32} className="text-white" />
-                    </div>
+                  <div className="relative h-32 overflow-hidden">
+                    <img 
+                      src={coworkingPeople} 
+                      alt="Professionals working in coworking space"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                  </div>
+                  <CardContent className="p-4 text-center">
                     <h3 className="font-bold text-xl text-card-foreground mb-2">Coworking</h3>
                     <p className="text-muted-foreground text-sm mb-3">Uninterrupted power & fast internet</p>
                     <Badge variant="secondary" className="text-xs">
@@ -147,13 +165,18 @@ const Index = () => {
 
                 {/* Game Hub Card */}
                 <Card 
-                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group"
+                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group overflow-hidden"
                   onClick={() => navigate('/gaming')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                      <Gamepad2 size={32} className="text-white" />
-                    </div>
+                  <div className="relative h-32 overflow-hidden">
+                    <img 
+                      src={gamingPeople} 
+                      alt="Gamers enjoying VR gaming"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                  </div>
+                  <CardContent className="p-4 text-center">
                     <h3 className="font-bold text-xl text-card-foreground mb-2">Game Hub</h3>
                     <p className="text-muted-foreground text-sm mb-3">PS5, VR Racing & Tournaments</p>
                     <Badge variant="secondary" className="text-xs">
@@ -165,15 +188,20 @@ const Index = () => {
 
                 {/* Internet & Power Card */}
                 <Card 
-                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group"
+                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group overflow-hidden"
                   onClick={() => navigate('/plans')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                      <Wifi size={32} className="text-white" />
-                    </div>
+                  <div className="relative h-32 overflow-hidden">
+                    <img 
+                      src={communityWifi} 
+                      alt="Community accessing WiFi under solar umbrella"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                  </div>
+                  <CardContent className="p-4 text-center">
                     <h3 className="font-bold text-xl text-card-foreground mb-2">Internet Plans</h3>
-                    <p className="text-muted-foreground text-sm mb-3">Starlink-powered connectivity</p>
+                    <p className="text-muted-foreground text-sm mb-3">Solar-powered connectivity</p>
                     <Badge variant="secondary" className="text-xs">
                       Up to 100Mbps
                     </Badge>
@@ -182,13 +210,18 @@ const Index = () => {
 
                 {/* Leaderboard Card */}
                 <Card 
-                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group"
+                  className="bg-card border hover:border-primary/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl cursor-pointer group overflow-hidden"
                   onClick={() => navigate('/leaderboard')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                      <Trophy size={32} className="text-white" />
-                    </div>
+                  <div className="relative h-32 overflow-hidden">
+                    <img 
+                      src={esportsTournament} 
+                      alt="Competitive esports tournament"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                  </div>
+                  <CardContent className="p-4 text-center">
                     <h3 className="font-bold text-xl text-card-foreground mb-2">Leaderboard</h3>
                     <p className="text-muted-foreground text-sm mb-3">Compete & climb the ranks</p>
                     <Badge variant="secondary" className="text-xs">
@@ -220,11 +253,15 @@ const Index = () => {
           
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {/* Coworking Feature */}
-            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all">
+            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all overflow-hidden">
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={coworkingPeople} 
+                  alt="Professionals working together"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
               <CardContent className="p-6 md:p-8">
-                <div className="bg-blue-500/10 rounded-2xl p-4 w-fit mb-6">
-                  <Coffee className="w-8 h-8 text-blue-500" />
-                </div>
                 <h3 className="text-xl font-bold text-card-foreground mb-3">Coworking Spaces</h3>
                 <p className="text-muted-foreground mb-4">
                   4 tiers from Basic to VIP. Premium tiers include 2 meals daily. 
@@ -248,11 +285,15 @@ const Index = () => {
             </Card>
 
             {/* Gaming Feature */}
-            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all">
+            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all overflow-hidden">
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={esportsTournament} 
+                  alt="Esports tournament in action"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
               <CardContent className="p-6 md:p-8">
-                <div className="bg-purple-500/10 rounded-2xl p-4 w-fit mb-6">
-                  <Gamepad2 className="w-8 h-8 text-purple-500" />
-                </div>
                 <h3 className="text-xl font-bold text-card-foreground mb-3">Gaming Hub</h3>
                 <p className="text-muted-foreground mb-4">
                   PS4/PS5 consoles, VR racing simulators, immersive VR experiences, 
@@ -276,11 +317,15 @@ const Index = () => {
             </Card>
 
             {/* XP & Rewards Feature */}
-            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all">
+            <Card className="bg-card border-0 shadow-lg hover:shadow-xl transition-all overflow-hidden">
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={personEntrepreneur} 
+                  alt="Young entrepreneur building success"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
               <CardContent className="p-6 md:p-8">
-                <div className="bg-green-500/10 rounded-2xl p-4 w-fit mb-6">
-                  <Crown className="w-8 h-8 text-green-500" />
-                </div>
                 <h3 className="text-xl font-bold text-card-foreground mb-3">XP & Rewards</h3>
                 <p className="text-muted-foreground mb-4">
                   Every action in our ecosystem earns XP. Level up to unlock perks 

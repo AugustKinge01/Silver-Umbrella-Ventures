@@ -12,6 +12,7 @@ import { Utensils, Wifi, Zap, Clock, MapPin, Users, Star, Coffee, Monitor, Lock,
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import coworkingPeople from "@/assets/coworking-people.jpg";
 
 type CoworkingTier = 'basic' | 'standard' | 'premium' | 'vip';
 
@@ -169,9 +170,17 @@ const CoworkingPage = () => {
   return (
     <Layout title="Coworking Space" description="Book your productive workspace with power, internet & meals">
       {/* Hero Section */}
-      <div className="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-primary/20 via-primary/10 to-background p-8">
-        <div className="relative z-10">
-          <Badge className="mb-4">
+      <div className="relative rounded-2xl overflow-hidden mb-8">
+        <div className="absolute inset-0">
+          <img 
+            src={coworkingPeople} 
+            alt="Professionals collaborating in coworking space"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
+        </div>
+        <div className="relative z-10 p-8 md:p-12">
+          <Badge className="mb-4 bg-primary/90">
             <Sparkles className="w-3 h-3 mr-1" />
             Earn XP with every booking
           </Badge>
