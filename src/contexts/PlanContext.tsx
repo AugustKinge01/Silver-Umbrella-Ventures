@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { useOneChainContracts } from "@/hooks/useOneChainContracts";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define types
 export type PlanType = 'internet' | 'power';
@@ -132,153 +133,6 @@ type PlanContextType = {
 // Create the context
 const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
-// Mock data with enhanced information
-const mockPlans: Plan[] = [
-  {
-    id: 'plan_1',
-    name: 'Browsing Basic',
-    type: 'internet',
-    description: 'Basic internet for casual browsing and messaging',
-    price: 500, // in Naira
-    duration: 24, // 24 hours
-    features: ['1 Mbps speed', 'Up to 3 devices', 'Valid for 24 hours'],
-  },
-  {
-    id: 'plan_2',
-    name: 'Browsing Pro',
-    type: 'internet',
-    description: 'Faster internet for video streaming and downloads',
-    price: 1000,
-    duration: 24,
-    features: ['3 Mbps speed', 'Up to 5 devices', 'Valid for 24 hours'],
-    popular: true,
-  },
-  {
-    id: 'plan_3',
-    name: 'Weekly Internet',
-    type: 'internet',
-    description: 'Full week of internet access at great value',
-    price: 3000,
-    duration: 168, // 7 days
-    features: ['2 Mbps speed', 'Up to 5 devices', 'Valid for 7 days'],
-  },
-  {
-    id: 'plan_4',
-    name: 'Power Basic',
-    type: 'power',
-    description: 'Basic power for lighting and phone charging',
-    price: 300,
-    duration: 24,
-    features: ['Up to 100W usage', 'Phone and light charging', 'Valid for 24 hours'],
-  },
-  {
-    id: 'plan_5',
-    name: 'Power Plus',
-    type: 'power',
-    description: 'Enhanced power for TVs, fans and laptops',
-    price: 800,
-    duration: 24,
-    features: ['Up to 300W usage', 'TV, fans, laptop support', 'Valid for 24 hours'],
-    popular: true,
-  },
-  {
-    id: 'plan_6',
-    name: 'Weekly Power',
-    type: 'power',
-    description: 'Full week of power access at great value',
-    price: 5000,
-    duration: 168, // 7 days
-    features: ['Up to 200W usage', 'All basic appliances', 'Valid for 7 days'],
-  },
-];
-
-const mockHotspots: Hotspot[] = [
-  {
-    id: 'hotspot_1',
-    name: 'Ijero Community Center',
-    location: 'Ijero-Ekiti Main Square',
-    coordinates: [7.8126, 5.0677],
-    status: 'active',
-    services: ['internet', 'power'],
-    signalStrength: {
-      level: 4,
-      rssi: -45,
-      quality: 'excellent',
-      lastUpdated: new Date(),
-    },
-    capacity: {
-      currentUsers: 45,
-      maxUsers: 200,
-      utilizationRate: 22.5,
-      queueLength: 0,
-    },
-    equipmentHealth: {
-      temperature: 32,
-      batteryLevel: 85,
-      solarGeneration: 650,
-      powerConsumption: 180,
-      uptime: 720,
-      lastMaintenance: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    },
-  },
-  {
-    id: 'hotspot_2',
-    name: 'Ekiti State University',
-    location: 'EKSU Campus Library',
-    coordinates: [7.7173, 5.2193],
-    status: 'active',
-    services: ['internet'],
-    signalStrength: {
-      level: 3,
-      rssi: -60,
-      quality: 'good',
-      lastUpdated: new Date(),
-    },
-    capacity: {
-      currentUsers: 120,
-      maxUsers: 200,
-      utilizationRate: 60,
-      queueLength: 5,
-    },
-    equipmentHealth: {
-      temperature: 35,
-      batteryLevel: 92,
-      solarGeneration: 580,
-      powerConsumption: 165,
-      uptime: 480,
-      lastMaintenance: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-    },
-  },
-  {
-    id: 'hotspot_3',
-    name: 'Ado Market Hub',
-    location: 'Central Market, Ado-Ekiti',
-    coordinates: [7.6232, 5.2219],
-    status: 'maintenance',
-    services: ['internet', 'power'],
-    signalStrength: {
-      level: 0,
-      rssi: -90,
-      quality: 'no-signal',
-      lastUpdated: new Date(),
-    },
-    capacity: {
-      currentUsers: 0,
-      maxUsers: 200,
-      utilizationRate: 0,
-      queueLength: 0,
-    },
-    equipmentHealth: {
-      temperature: 28,
-      batteryLevel: 65,
-      solarGeneration: 320,
-      powerConsumption: 45,
-      uptime: 0,
-      lastMaintenance: new Date(),
-    },
-  },
-];
-
 const mockPointsRedemptions: PointsRedemption[] = [
   {
     id: 'redeem_1',
@@ -320,9 +174,9 @@ const mockPointsRedemptions: PointsRedemption[] = [
 
 // Provider component
 export const PlanProvider = ({ children }: { children: ReactNode }) => {
-  const [plans, setPlans] = useState<Plan[]>(mockPlans);
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
-  const [hotspots, setHotspots] = useState<Hotspot[]>(mockHotspots);
+  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
   const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
   const [pointsTransactions, setPointsTransactions] = useState<PointsTransaction[]>([]);
@@ -333,25 +187,105 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   // OneChain contracts integration
   const { purchasePlan: purchasePlanContract, mintVoucher } = useOneChainContracts();
 
-  // Load data from localStorage on mount
+  // Fetch data from Supabase
   useEffect(() => {
-    const savedVouchers = localStorage.getItem('silverUmbrella.vouchers');
-    const savedInviteCodes = localStorage.getItem('silverUmbrella.inviteCodes');
-    const savedPointsTransactions = localStorage.getItem('silverUmbrella.pointsTransactions');
+    const fetchData = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Fetch plans from database
+        const { data: dbPlans, error: plansError } = await supabase
+          .from('plans')
+          .select('*')
+          .eq('is_active', true);
+        
+        if (plansError) throw plansError;
+        
+        if (dbPlans && dbPlans.length > 0) {
+          const formattedPlans: Plan[] = dbPlans.map((p, index) => ({
+            id: p.id,
+            name: p.name,
+            type: p.duration_hours <= 24 ? 'internet' : 'internet', // Default to internet
+            description: p.description || '',
+            price: Number(p.price),
+            duration: p.duration_hours,
+            features: [
+              `${p.speed_mbps} Mbps speed`,
+              p.data_limit_mb ? `${p.data_limit_mb}MB data` : 'Unlimited data',
+              `Valid for ${p.duration_hours} hours`
+            ],
+            popular: index === 1, // Mark second plan as popular
+          }));
+          setPlans(formattedPlans);
+        }
+        
+        // Fetch hotspots from database
+        const { data: dbHotspots, error: hotspotsError } = await supabase
+          .from('hotspots')
+          .select('*');
+        
+        if (hotspotsError) throw hotspotsError;
+        
+        if (dbHotspots && dbHotspots.length > 0) {
+          const formattedHotspots: Hotspot[] = dbHotspots.map(h => ({
+            id: h.id,
+            name: h.name,
+            location: h.location,
+            coordinates: [Number(h.latitude) || 0, Number(h.longitude) || 0] as [number, number],
+            status: h.status as 'active' | 'inactive' | 'maintenance',
+            services: h.is_solar_powered ? ['internet', 'power'] : ['internet'],
+            signalStrength: {
+              level: Math.floor((h.signal_strength || 0) / 25),
+              rssi: -90 + (h.signal_strength || 0),
+              quality: h.signal_strength >= 80 ? 'excellent' : h.signal_strength >= 60 ? 'good' : h.signal_strength >= 40 ? 'fair' : 'poor',
+              lastUpdated: new Date(),
+            },
+            capacity: {
+              currentUsers: h.current_users || 0,
+              maxUsers: h.capacity || 50,
+              utilizationRate: ((h.current_users || 0) / (h.capacity || 50)) * 100,
+              queueLength: 0,
+            },
+            equipmentHealth: {
+              temperature: 30,
+              batteryLevel: 85,
+              solarGeneration: h.is_solar_powered ? 500 : 0,
+              powerConsumption: 150,
+              uptime: 720,
+              lastMaintenance: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            },
+          }));
+          setHotspots(formattedHotspots);
+        }
+        
+        // Load vouchers from localStorage (user-specific, not in DB yet)
+        const savedVouchers = localStorage.getItem('silverUmbrella.vouchers');
+        const savedInviteCodes = localStorage.getItem('silverUmbrella.inviteCodes');
+        const savedPointsTransactions = localStorage.getItem('silverUmbrella.pointsTransactions');
+        
+        if (savedVouchers) setVouchers(JSON.parse(savedVouchers));
+        if (savedInviteCodes) setInviteCodes(JSON.parse(savedInviteCodes));
+        if (savedPointsTransactions) {
+          const transactions = JSON.parse(savedPointsTransactions);
+          setPointsTransactions(transactions);
+          const totalPoints = transactions.reduce((sum: number, transaction: PointsTransaction) => {
+            return transaction.type === 'earned' ? sum + transaction.points : sum - transaction.points;
+          }, 0);
+          setUserPoints(Math.max(0, totalPoints));
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast({
+          title: "Error loading data",
+          description: "Some features may not work correctly.",
+          variant: "destructive",
+        });
+      }
+      
+      setIsLoading(false);
+    };
     
-    if (savedVouchers) setVouchers(JSON.parse(savedVouchers));
-    if (savedInviteCodes) setInviteCodes(JSON.parse(savedInviteCodes));
-    if (savedPointsTransactions) {
-      const transactions = JSON.parse(savedPointsTransactions);
-      setPointsTransactions(transactions);
-      // Calculate user points from transactions
-      const totalPoints = transactions.reduce((sum: number, transaction: PointsTransaction) => {
-        return transaction.type === 'earned' ? sum + transaction.points : sum - transaction.points;
-      }, 0);
-      setUserPoints(Math.max(0, totalPoints));
-    }
-    
-    setIsLoading(false);
+    fetchData();
   }, []);
 
   // Save data to localStorage whenever they change
