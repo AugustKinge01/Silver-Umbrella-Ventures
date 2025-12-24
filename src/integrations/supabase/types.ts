@@ -222,6 +222,51 @@ export type Database = {
         }
         Relationships: []
       }
+      hotspots: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          current_users: number | null
+          id: string
+          is_solar_powered: boolean | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          name: string
+          signal_strength: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          current_users?: number | null
+          id?: string
+          is_solar_powered?: boolean | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          name: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          current_users?: number | null
+          id?: string
+          is_solar_powered?: boolean | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          name?: string
+          signal_strength?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -255,6 +300,42 @@ export type Database = {
           status?: string
           transaction_hash?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          created_at: string
+          data_limit_mb: number | null
+          description: string | null
+          duration_hours: number
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          speed_mbps: number
+        }
+        Insert: {
+          created_at?: string
+          data_limit_mb?: number | null
+          description?: string | null
+          duration_hours: number
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          speed_mbps?: number
+        }
+        Update: {
+          created_at?: string
+          data_limit_mb?: number | null
+          description?: string | null
+          duration_hours?: number
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          speed_mbps?: number
         }
         Relationships: []
       }
@@ -479,6 +560,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_plans: {
+        Row: {
+          created_at: string
+          data_used_mb: number | null
+          end_time: string
+          id: string
+          payment_status: string
+          plan_id: string
+          start_time: string
+          status: string
+          user_id: string
+          voucher_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_used_mb?: number | null
+          end_time: string
+          id?: string
+          payment_status?: string
+          plan_id: string
+          start_time?: string
+          status?: string
+          user_id: string
+          voucher_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_used_mb?: number | null
+          end_time?: string
+          id?: string
+          payment_status?: string
+          plan_id?: string
+          start_time?: string
+          status?: string
+          user_id?: string
+          voucher_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_plans_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_plans_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -532,6 +667,50 @@ export type Database = {
           xp_to_next_level?: number
         }
         Relationships: []
+      }
+      vouchers: {
+        Row: {
+          activated_at: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_used: boolean | null
+          plan_id: string
+          user_id: string | null
+        }
+        Insert: {
+          activated_at?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          plan_id: string
+          user_id?: string | null
+        }
+        Update: {
+          activated_at?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          plan_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vouchers_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       xp_transactions: {
         Row: {
