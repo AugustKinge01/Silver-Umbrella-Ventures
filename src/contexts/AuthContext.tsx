@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { User as SupabaseUser } from '@supabase/supabase-js';
-
+import type { Session } from '@supabase/supabase-js';
 // Define types
 type User = {
   id: string;
@@ -29,7 +28,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch user roles
   const fetchUserRoles = async (userId: string): Promise<string[]> => {
@@ -37,67 +37,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .from('user_roles')
       .select('role')
       .eq('user_id', userId);
-    
+
     if (error) {
       console.error('Error fetching roles:', error);
       return ['user'];
     }
-    
-    return data?.map(r => r.role) || ['user'];
+
+    return data?.map((r) => r.role) || ['user'];
   };
 
-  // Check for existing session on mount
+  // Check for existing session on mount (and keep it updated)
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const roles = await fetchUserRoles(session.user.id);
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            phone: session.user.phone,
-            roles,
-            name: session.user.user_metadata?.full_name
-          });
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
+    let isMounted = true;
+
+    const applySession = (nextSession: Session | null) => {
+      if (!isMounted) return;
+
+      setSession(nextSession);
+
+      if (!nextSession?.user) {
+        setUser(null);
+        return;
       }
+
+      // Set a baseline user synchronously (prevents login->redirect->bounce race)
+      setUser({
+        id: nextSession.user.id,
+        email: nextSession.user.email || '',
+        phone: nextSession.user.phone,
+        roles: ['user'],
+        name: nextSession.user.user_metadata?.full_name,
+      });
+
+      // Defer any DB calls to avoid auth deadlocks
+      setTimeout(() => {
+        fetchUserRoles(nextSession.user.id).then((roles) => {
+          if (!isMounted) return;
+          setUser((prev) => (prev && prev.id === nextSession.user.id ? { ...prev, roles } : prev));
+        });
+      }, 0);
     };
 
-    checkSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const roles = await fetchUserRoles(session.user.id);
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          phone: session.user.phone,
-          roles,
-          name: session.user.user_metadata?.full_name
-        });
-      } else {
-        setUser(null);
-      }
+    // Listener FIRST
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      applySession(nextSession);
     });
 
-    return () => subscription.unsubscribe();
+    // THEN initial session
+    setIsLoading(true);
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        applySession(session);
+      })
+      .catch((error) => {
+        console.error('Error checking session:', error);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Sign up function
   const signUp = async (email: string, password: string, fullName?: string): Promise<boolean> => {
+    setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const redirectUrl = `${window.location.origin}/`;
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
-            full_name: fullName
-          }
-        }
+            full_name: fullName,
+          },
+        },
       });
 
       if (error) throw error;
@@ -106,7 +128,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Account Created",
         description: "Welcome to Silver Umbrella!",
       });
-      return true;
+
+      // With auto-confirm enabled in the backend, a session will be created immediately.
+      // If it isn't (e.g. email confirm turned on), we keep user on the login page.
+      return Boolean(data.session);
     } catch (error: any) {
       console.error('Error signing up:', error);
       toast({
@@ -115,11 +140,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive",
       });
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Sign in function
   const signIn = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -141,6 +169,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive",
       });
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -187,11 +217,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isLoading, 
-      signUp, 
-      signIn, 
+    <AuthContext.Provider value={{
+      user,
+      isLoading,
+      signUp,
+      signIn,
       logout,
       connectWallet,
       checkIsAdmin,
