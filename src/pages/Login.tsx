@@ -4,42 +4,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Zap } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, signIn, signUp, isLoading, checkIsAdmin } = useAuth();
-  
+  const { user, signIn, signUp } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
-  // Auto-redirect disabled to allow testing login/signup
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate(checkIsAdmin() ? "/admin" : "/dashboard");
-  //   }
-  // }, [user, navigate, checkIsAdmin]);
+  // Redirect as soon as session state updates (prevents "login succeeded but I'm bounced back" race).
+  useEffect(() => {
+    if (!user) return;
+    const isAdmin = user.roles?.includes("admin");
+    navigate(isAdmin ? "/admin" : "/dashboard");
+  }, [user, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
-    const success = await signIn(email, password);
-    if (success) {
-      navigate(checkIsAdmin() ? "/admin" : "/dashboard");
-    }
+    await signIn(email, password);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
-    const success = await signUp(email, password, fullName);
-    if (success) {
-      navigate(checkIsAdmin() ? "/admin" : "/dashboard");
-    }
+    await signUp(email, password, fullName);
   };
 
   return (
