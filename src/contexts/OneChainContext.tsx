@@ -21,6 +21,7 @@ type WalletInfo = {
   address: string;
   balance: string;
   network: 'testnet' | 'mainnet';
+  isDemo?: boolean;
 };
 
 type OneChainContextType = {
