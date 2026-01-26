@@ -27,6 +27,7 @@ type WalletInfo = {
 type OneChainContextType = {
   wallet: WalletInfo | null;
   isConnecting: boolean;
+  isDemo: boolean;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
   signAndExecuteTransaction: (transaction: any) => Promise<any>;
@@ -164,7 +165,8 @@ export const OneChainProvider = ({ children }: { children: ReactNode }) => {
   return (
     <OneChainContext.Provider value={{ 
       wallet, 
-      isConnecting, 
+      isConnecting,
+      isDemo: wallet?.isDemo ?? false,
       connectWallet, 
       disconnectWallet,
       signAndExecuteTransaction,

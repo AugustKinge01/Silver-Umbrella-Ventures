@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import coworkingPeople from "@/assets/coworking-people.jpg";
+import BookingPaymentModal, { BookingType } from "@/components/BookingPaymentModal";
 
 type CoworkingTier = 'basic' | 'standard' | 'premium' | 'vip';
 
@@ -60,6 +61,7 @@ const CoworkingPage = () => {
   const [spaces, setSpaces] = useState<CoworkingSpace[]>([]);
   const [selectedTier, setSelectedTier] = useState<CoworkingTier | null>(null);
   const [bookingModal, setBookingModal] = useState(false);
+  const [paymentModal, setPaymentModal] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState<CoworkingSpace | null>(null);
   const [bookingDuration, setBookingDuration] = useState<'hourly' | 'daily' | 'monthly'>('daily');
   const [hours, setHours] = useState(1);
@@ -114,13 +116,25 @@ const CoworkingPage = () => {
     setBookingModal(true);
   };
 
-  const confirmBooking = async () => {
+  const confirmBooking = () => {
+    if (!user || !selectedSpace) return;
+    setBookingModal(false);
+    setPaymentModal(true);
+  };
+
+  const getDurationString = () => {
+    if (bookingDuration === 'hourly') return `${hours} hour(s)`;
+    if (bookingDuration === 'daily') return '1 day';
+    return '1 month';
+  };
+
+  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
     if (!user || !selectedSpace) return;
     
     const tier = tiers.find(t => t.tier === selectedSpace.tier);
     if (!tier) return;
 
-    const amount = calculatePrice(tier);
+    const amount = calculatePrice(tier) * 1000; // Convert to Naira
     const xp = calculateXP(tier);
     const startTime = new Date();
     let endTime = new Date();
@@ -133,34 +147,35 @@ const CoworkingPage = () => {
       endTime.setMonth(endTime.getMonth() + 1);
     }
 
-    try {
-      const { error } = await supabase.from('coworking_bookings').insert({
-        user_id: user.id,
-        space_id: selectedSpace.id,
-        tier: selectedSpace.tier,
-        start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
-        meals_used: 0,
-        total_amount: amount,
-        xp_earned: xp,
-        payment_status: 'pending'
-      });
+    // Insert booking
+    const { error } = await supabase.from('coworking_bookings').insert({
+      user_id: user.id,
+      space_id: selectedSpace.id,
+      tier: selectedSpace.tier,
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      meals_used: 0,
+      total_amount: amount,
+      xp_earned: xp,
+      payment_status: 'completed'
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      toast({
-        title: "Booking Confirmed!",
-        description: `You'll earn ${xp} XP for this booking. ${tier.meals_included > 0 ? `${tier.meals_included} meals included!` : ''}`,
-      });
-      setBookingModal(false);
-    } catch (error) {
-      console.error('Booking error:', error);
-      toast({
-        title: "Booking Failed",
-        description: "Please try again later.",
-        variant: "destructive"
-      });
-    }
+    // Record payment
+    await supabase.from('payments').insert({
+      user_id: user.id,
+      amount: amount,
+      payment_method: paymentMethod,
+      status: 'completed',
+      description: `Coworking: ${selectedSpace.name} - ${getDurationString()} - Voucher: ${voucherCode}`,
+      currency: 'NGN'
+    });
+
+    toast({
+      title: "Booking Confirmed!",
+      description: `You earned ${xp} XP! ${tier.meals_included > 0 ? `${tier.meals_included} meals included!` : ''}`,
+    });
   };
 
   const filteredSpaces = selectedTier 
@@ -354,7 +369,7 @@ const CoworkingPage = () => {
                       <span className="font-bold">+{calculateXP(tier)} XP</span>
                     </div>
                     {tier.meals_included > 0 && (
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between text-primary">
                         <span>Meals Included</span>
                         <span className="font-bold">{tier.meals_included} per day</span>
                       </div>
@@ -367,10 +382,30 @@ const CoworkingPage = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setBookingModal(false)}>Cancel</Button>
-            <Button onClick={confirmBooking}>Confirm Booking</Button>
+            <Button onClick={confirmBooking}>Proceed to Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Coworking Payment Modal */}
+      <BookingPaymentModal
+        isOpen={paymentModal}
+        onClose={() => setPaymentModal(false)}
+        booking={selectedSpace && selectedTier ? (() => {
+          const tier = tiers.find(t => t.tier === selectedTier);
+          if (!tier) return null;
+          return {
+            type: 'coworking' as BookingType,
+            name: selectedSpace.name,
+            description: `${tier.name} tier - ${getDurationString()}`,
+            amount: calculatePrice(tier) * 1000, // Convert to Naira
+            xpEarned: calculateXP(tier),
+            duration: getDurationString(),
+            mealsIncluded: tier.meals_included
+          };
+        })() : null}
+        onPaymentComplete={handlePaymentComplete}
+      />
     </Layout>
   );
 };
