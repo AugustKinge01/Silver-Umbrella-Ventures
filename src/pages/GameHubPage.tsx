@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import gamingPeople from "@/assets/gaming-people.jpg";
 import esportsTournament from "@/assets/esports-tournament.jpg";
+import BookingPaymentModal, { BookingType } from "@/components/BookingPaymentModal";
 
 type StationType = 'ps4' | 'ps5' | 'vr_racing' | 'vr_immersive' | 'mobile_esports';
 type TournamentStatus = 'upcoming' | 'registration' | 'in_progress' | 'completed' | 'cancelled';
@@ -77,7 +78,9 @@ const GameHubPage = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [selectedStation, setSelectedStation] = useState<GamingStation | null>(null);
   const [bookingModal, setBookingModal] = useState(false);
+  const [paymentModal, setPaymentModal] = useState(false);
   const [tournamentModal, setTournamentModal] = useState<Tournament | null>(null);
+  const [tournamentPaymentModal, setTournamentPaymentModal] = useState(false);
   const [hours, setHours] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("stations");
@@ -114,85 +117,148 @@ const GameHubPage = () => {
     setBookingModal(true);
   };
 
-  const confirmBooking = async () => {
+  const confirmBooking = () => {
+    if (!user || !selectedStation) return;
+    setBookingModal(false);
+    setPaymentModal(true);
+  };
+
+  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
     if (!user || !selectedStation) return;
 
-    const totalAmount = selectedStation.hourly_rate * hours;
+    const totalAmount = selectedStation.hourly_rate * hours * 1000; // Convert to Naira
     const xpEarned = selectedStation.xp_per_hour * hours;
     const startTime = new Date();
     const endTime = new Date();
     endTime.setHours(endTime.getHours() + hours);
 
-    try {
-      const { error } = await supabase.from('gaming_sessions').insert({
-        user_id: user.id,
-        station_id: selectedStation.id,
-        start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
-        duration_hours: hours,
-        total_amount: totalAmount,
-        xp_earned: xpEarned,
-        payment_status: 'pending'
-      });
+    // Insert gaming session
+    const { error } = await supabase.from('gaming_sessions').insert({
+      user_id: user.id,
+      station_id: selectedStation.id,
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      duration_hours: hours,
+      total_amount: totalAmount,
+      xp_earned: xpEarned,
+      payment_status: 'completed'
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      toast({
-        title: "Session Booked!",
-        description: `${hours}h on ${selectedStation.name}. You'll earn ${xpEarned} XP!`,
-      });
-      setBookingModal(false);
-    } catch (error) {
-      console.error('Booking error:', error);
-      toast({
-        title: "Booking Failed",
-        description: "Please try again.",
-        variant: "destructive"
-      });
+    // Record payment
+    await supabase.from('payments').insert({
+      user_id: user.id,
+      amount: totalAmount,
+      payment_method: paymentMethod,
+      status: 'completed',
+      description: `Gaming session: ${selectedStation.name} - ${hours}h - Voucher: ${voucherCode}`,
+      currency: 'NGN'
+    });
+
+    toast({
+      title: "Session Booked!",
+      description: `${hours}h on ${selectedStation.name}. You earned ${xpEarned} XP!`,
+    });
+  };
+
+  const openTournamentPayment = (tournament: Tournament) => {
+    setTournamentModal(tournament);
+    if (tournament.entry_fee > 0) {
+      setTournamentPaymentModal(true);
     }
+  };
+
+  const handleTournamentPaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
+    if (!user || !tournamentModal) return;
+
+    const { error } = await supabase.from('tournament_participants').insert({
+      tournament_id: tournamentModal.id,
+      user_id: user.id,
+      payment_status: 'completed'
+    });
+
+    if (error) {
+      if (error.code === '23505') {
+        toast({
+          title: "Already Registered",
+          description: "You're already in this tournament!",
+          variant: "destructive"
+        });
+      }
+      throw error;
+    }
+
+    // Update participant count
+    await supabase.from('tournaments').update({
+      current_participants: tournamentModal.current_participants + 1
+    }).eq('id', tournamentModal.id);
+
+    // Record payment
+    await supabase.from('payments').insert({
+      user_id: user.id,
+      amount: tournamentModal.entry_fee * 1000,
+      payment_method: paymentMethod,
+      status: 'completed',
+      description: `Tournament entry: ${tournamentModal.name} - Voucher: ${voucherCode}`,
+      currency: 'NGN'
+    });
+
+    toast({
+      title: "Registered!",
+      description: `You'll earn ${tournamentModal.xp_reward_participation} XP just for participating!`,
+    });
+    setTournamentPaymentModal(false);
+    setTournamentModal(null);
+    fetchData();
   };
 
   const registerForTournament = async (tournament: Tournament) => {
     if (!user) return;
 
-    try {
-      const { error } = await supabase.from('tournament_participants').insert({
-        tournament_id: tournament.id,
-        user_id: user.id,
-        payment_status: tournament.entry_fee > 0 ? 'pending' : 'completed'
-      });
+    // If free tournament, register directly
+    if (tournament.entry_fee === 0) {
+      try {
+        const { error } = await supabase.from('tournament_participants').insert({
+          tournament_id: tournament.id,
+          user_id: user.id,
+          payment_status: 'completed'
+        });
 
-      if (error) {
-        if (error.code === '23505') {
-          toast({
-            title: "Already Registered",
-            description: "You're already in this tournament!",
-            variant: "destructive"
-          });
-        } else {
-          throw error;
+        if (error) {
+          if (error.code === '23505') {
+            toast({
+              title: "Already Registered",
+              description: "You're already in this tournament!",
+              variant: "destructive"
+            });
+          } else {
+            throw error;
+          }
+          return;
         }
-        return;
+
+        await supabase.from('tournaments').update({
+          current_participants: tournament.current_participants + 1
+        }).eq('id', tournament.id);
+
+        toast({
+          title: "Registered!",
+          description: `You'll earn ${tournament.xp_reward_participation} XP just for participating!`,
+        });
+        setTournamentModal(null);
+        fetchData();
+      } catch (error) {
+        console.error('Registration error:', error);
+        toast({
+          title: "Registration Failed",
+          description: "Please try again.",
+          variant: "destructive"
+        });
       }
-
-      // Update participant count
-      await supabase.from('tournaments').update({
-        current_participants: tournament.current_participants + 1
-      }).eq('id', tournament.id);
-
-      toast({
-        title: "Registered!",
-        description: `You'll earn ${tournament.xp_reward_participation} XP just for participating!`,
-      });
-      setTournamentModal(null);
-      fetchData();
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast({
-        title: "Registration Failed",
-        description: "Please try again.",
-        variant: "destructive"
-      });
+    } else {
+      // Paid tournament - open payment modal
+      openTournamentPayment(tournament);
     }
   };
 
@@ -427,10 +493,25 @@ const GameHubPage = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setBookingModal(false)}>Cancel</Button>
-            <Button onClick={confirmBooking}>Book Session</Button>
+            <Button onClick={confirmBooking}>Proceed to Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Gaming Session Payment Modal */}
+      <BookingPaymentModal
+        isOpen={paymentModal}
+        onClose={() => setPaymentModal(false)}
+        booking={selectedStation ? {
+          type: 'gaming' as BookingType,
+          name: selectedStation.name,
+          description: `${hours}h gaming session`,
+          amount: selectedStation.hourly_rate * hours * 1000, // Convert to Naira
+          xpEarned: selectedStation.xp_per_hour * hours,
+          duration: `${hours} hour(s)`
+        } : null}
+        onPaymentComplete={handlePaymentComplete}
+      />
 
       {/* Tournament Registration Modal */}
       <Dialog open={!!tournamentModal} onOpenChange={() => setTournamentModal(null)}>
@@ -451,7 +532,7 @@ const GameHubPage = () => {
                     {tournamentModal.entry_fee > 0 ? `$${tournamentModal.entry_fee}` : 'FREE'}
                   </span>
                 </div>
-                <div className="flex justify-between text-green-500">
+                <div className="flex justify-between text-primary">
                   <span>Prize Pool</span>
                   <span className="font-bold">${tournamentModal.prize_pool}</span>
                 </div>
@@ -459,7 +540,7 @@ const GameHubPage = () => {
                   <span>Participation XP</span>
                   <span className="font-bold">+{tournamentModal.xp_reward_participation} XP</span>
                 </div>
-                <div className="flex justify-between text-amber-500">
+                <div className="flex justify-between text-secondary-foreground">
                   <span>Winner XP</span>
                   <span className="font-bold">+{tournamentModal.xp_reward_winner} XP</span>
                 </div>
@@ -470,11 +551,28 @@ const GameHubPage = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setTournamentModal(null)}>Cancel</Button>
             <Button onClick={() => tournamentModal && registerForTournament(tournamentModal)}>
-              {tournamentModal?.entry_fee ? `Pay $${tournamentModal.entry_fee} & Register` : 'Register Free'}
+              {tournamentModal?.entry_fee ? `Proceed to Payment` : 'Register Free'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Tournament Payment Modal */}
+      <BookingPaymentModal
+        isOpen={tournamentPaymentModal}
+        onClose={() => {
+          setTournamentPaymentModal(false);
+          setTournamentModal(null);
+        }}
+        booking={tournamentModal ? {
+          type: 'tournament' as BookingType,
+          name: tournamentModal.name,
+          description: tournamentModal.game,
+          amount: tournamentModal.entry_fee * 1000, // Convert to Naira
+          xpEarned: tournamentModal.xp_reward_participation
+        } : null}
+        onPaymentComplete={handleTournamentPaymentComplete}
+      />
     </Layout>
   );
 };
