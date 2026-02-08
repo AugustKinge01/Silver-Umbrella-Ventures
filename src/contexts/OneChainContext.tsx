@@ -99,16 +99,26 @@ export const OneChainProvider = ({ children }: { children: ReactNode }) => {
   const connectWallet = async () => {
     setIsConnecting(true);
     try {
+      console.log('Checking for OneWallet...', window.oneWallet);
+      
       // Check if OneWallet is installed
       if (!window.oneWallet) {
-        toast.error('Please install OneWallet extension');
-        window.open('https://chromewebstore.google.com/detail/onewallet/gclmcgmpkgblaglfokkaclneihpnbkli', '_blank');
+        toast.error('OneWallet not detected', {
+          description: 'Install OneWallet extension or use Demo Mode for testing',
+          action: {
+            label: 'Install',
+            onClick: () => window.open('https://chromewebstore.google.com/detail/onewallet/gclmcgmpkgblaglfokkaclneihpnbkli', '_blank'),
+          },
+        });
         setIsConnecting(false);
         return;
       }
 
+      toast.info('Requesting wallet connection...');
+      
       // Request connection
       const result = await window.oneWallet.connect();
+      console.log('OneWallet connect result:', result);
       
       if (!result.address) {
         toast.error('Failed to get address from OneWallet');
@@ -119,10 +129,26 @@ export const OneChainProvider = ({ children }: { children: ReactNode }) => {
       // Load account and get balance
       await refreshBalanceForWallet(result.address);
       
-      toast.success('Wallet connected successfully!');
+      toast.success('Wallet connected successfully!', {
+        description: `Address: ${result.address.substring(0, 8)}...`,
+      });
     } catch (error: any) {
       console.error('Wallet connection error:', error);
-      toast.error('Failed to connect wallet: ' + error.message);
+      
+      // More helpful error messages
+      if (error.message?.includes('rejected') || error.message?.includes('denied')) {
+        toast.error('Connection rejected', {
+          description: 'You declined the connection request in OneWallet',
+        });
+      } else if (error.message?.includes('timeout')) {
+        toast.error('Connection timed out', {
+          description: 'OneWallet did not respond. Please try again.',
+        });
+      } else {
+        toast.error('Failed to connect wallet', {
+          description: error.message || 'Unknown error occurred',
+        });
+      }
     } finally {
       setIsConnecting(false);
     }
