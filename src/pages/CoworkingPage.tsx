@@ -128,7 +128,7 @@ const CoworkingPage = () => {
     return '1 month';
   };
 
-  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
+  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string, txHash?: string) => {
     if (!user || !selectedSpace) return;
     
     const tier = tiers.find(t => t.tier === selectedSpace.tier);
@@ -162,14 +162,15 @@ const CoworkingPage = () => {
 
     if (error) throw error;
 
-    // Record payment
+    // Record payment with transaction hash
     await supabase.from('payments').insert({
       user_id: user.id,
       amount: amount,
       payment_method: paymentMethod,
       status: 'completed',
       description: `Coworking: ${selectedSpace.name} - ${getDurationString()} - Voucher: ${voucherCode}`,
-      currency: 'NGN'
+      currency: 'NGN',
+      transaction_hash: txHash || null
     });
 
     toast({

@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Wallet, Copy, Check, Phone } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CreditCard, Wallet, Copy, Check, Phone, ExternalLink, Hash } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { useOneChain } from "@/contexts/OneChainContext";
+import { useOneChainTransaction } from "@/hooks/useOneChainTransaction";
 import { useToast } from "@/hooks/use-toast";
 import { generateSecureVoucherCode, formatVoucherCode } from "@/lib/voucherGenerator";
 
@@ -22,11 +24,17 @@ interface BookingDetails {
   mealsIncluded?: number;
 }
 
+interface TransactionInfo {
+  hash: string;
+  explorerUrl: string;
+  isDemo: boolean;
+}
+
 type BookingPaymentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   booking: BookingDetails | null;
-  onPaymentComplete: (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => Promise<void>;
+  onPaymentComplete: (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string, txHash?: string) => Promise<void>;
 };
 
 const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: BookingPaymentModalProps) => {
@@ -40,9 +48,12 @@ const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: Bo
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedVoucher, setGeneratedVoucher] = useState<string | null>(null);
+  const [transactionInfo, setTransactionInfo] = useState<TransactionInfo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [hashCopied, setHashCopied] = useState(false);
   
   const { wallet, connectWallet, isDemo } = useOneChain();
+  const { executeTransaction, getTransactionUrl } = useOneChainTransaction();
   const { toast } = useToast();
 
   const validatePhone = (value: string) => {
@@ -100,13 +111,36 @@ const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: Bo
 
     setIsLoading(true);
     try {
+      // Execute real blockchain transaction
+      const oneAmount = (booking!.amount / 1000).toFixed(4);
+      const txResult = await executeTransaction(
+        wallet.address,
+        oneAmount,
+        `${booking!.type}: ${booking!.name}`,
+        isDemo
+      );
+
+      if (!txResult.success) {
+        throw new Error(txResult.error || 'Transaction failed');
+      }
+
       const voucherCode = generateSecureVoucherCode(phone);
-      await onPaymentComplete('crypto', voucherCode, phone);
+      
+      // Store transaction info for display
+      if (txResult.digest) {
+        setTransactionInfo({
+          hash: txResult.digest,
+          explorerUrl: getTransactionUrl(txResult.digest),
+          isDemo,
+        });
+      }
+
+      await onPaymentComplete('crypto', voucherCode, phone, txResult.digest || undefined);
       setGeneratedVoucher(voucherCode);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Payment Failed",
-        description: "Please try again.",
+        description: error.message || "Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -134,9 +168,31 @@ const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: Bo
     }
   };
 
+  const copyHashToClipboard = async () => {
+    if (!transactionInfo?.hash) return;
+    
+    try {
+      await navigator.clipboard.writeText(transactionInfo.hash);
+      setHashCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Transaction hash copied to clipboard.",
+      });
+      setTimeout(() => setHashCopied(false), 2000);
+    } catch {
+      toast({
+        title: "Copy Failed",
+        description: "Please manually copy the hash.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleClose = () => {
     setGeneratedVoucher(null);
+    setTransactionInfo(null);
     setCopied(false);
+    setHashCopied(false);
     setPhone('');
     setCardDetails({ cardNumber: '', expiryDate: '', cvv: '', name: '' });
     onClose();
@@ -179,6 +235,43 @@ const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: Bo
               </p>
             </div>
 
+            {/* Transaction Hash Section */}
+            {transactionInfo && (
+              <div className="bg-secondary/20 border border-border p-4 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium flex items-center gap-2">
+                    <Hash className="h-4 w-4" />
+                    Transaction Hash
+                  </span>
+                  {transactionInfo.isDemo && (
+                    <Badge variant="secondary" className="text-xs">Demo</Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs font-mono bg-background p-2 rounded border flex-1 break-all">
+                    {transactionInfo.hash}
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={copyHashToClipboard}
+                    className="shrink-0"
+                  >
+                    {hashCopied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="p-0 h-auto text-xs"
+                  onClick={() => window.open(transactionInfo.explorerUrl, '_blank')}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
+                  View on Explorer {transactionInfo.isDemo && "(Simulated)"}
+                </Button>
+              </div>
+            )}
+
             <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Session</span>
@@ -188,6 +281,12 @@ const BookingPaymentModal = ({ isOpen, onClose, booking, onPaymentComplete }: Bo
                 <span>Amount Paid</span>
                 <span className="font-medium">₦{booking.amount.toLocaleString()}</span>
               </div>
+              {transactionInfo && (
+                <div className="flex justify-between">
+                  <span>Paid in ONE</span>
+                  <span className="font-medium">{oneEquivalent} ONE</span>
+                </div>
+              )}
               {booking.xpEarned && (
                 <div className="flex justify-between text-primary">
                   <span>XP Earned</span>
