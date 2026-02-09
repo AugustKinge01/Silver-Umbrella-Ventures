@@ -123,7 +123,7 @@ const GameHubPage = () => {
     setPaymentModal(true);
   };
 
-  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
+  const handlePaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string, txHash?: string) => {
     if (!user || !selectedStation) return;
 
     const totalAmount = selectedStation.hourly_rate * hours * 1000; // Convert to Naira
@@ -146,14 +146,15 @@ const GameHubPage = () => {
 
     if (error) throw error;
 
-    // Record payment
+    // Record payment with transaction hash
     await supabase.from('payments').insert({
       user_id: user.id,
       amount: totalAmount,
       payment_method: paymentMethod,
       status: 'completed',
       description: `Gaming session: ${selectedStation.name} - ${hours}h - Voucher: ${voucherCode}`,
-      currency: 'NGN'
+      currency: 'NGN',
+      transaction_hash: txHash || null
     });
 
     toast({
@@ -169,7 +170,7 @@ const GameHubPage = () => {
     }
   };
 
-  const handleTournamentPaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string) => {
+  const handleTournamentPaymentComplete = async (paymentMethod: 'card' | 'crypto', voucherCode: string, phone: string, txHash?: string) => {
     if (!user || !tournamentModal) return;
 
     const { error } = await supabase.from('tournament_participants').insert({
@@ -194,14 +195,15 @@ const GameHubPage = () => {
       current_participants: tournamentModal.current_participants + 1
     }).eq('id', tournamentModal.id);
 
-    // Record payment
+    // Record payment with transaction hash
     await supabase.from('payments').insert({
       user_id: user.id,
       amount: tournamentModal.entry_fee * 1000,
       payment_method: paymentMethod,
       status: 'completed',
       description: `Tournament entry: ${tournamentModal.name} - Voucher: ${voucherCode}`,
-      currency: 'NGN'
+      currency: 'NGN',
+      transaction_hash: txHash || null
     });
 
     toast({
